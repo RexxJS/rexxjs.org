@@ -1,0 +1,17 @@
+title: RexxJS
+description: REXX interpreter for JavaScript with cross-application communication
+url: https://rexxjs.org
+baseurl: ""
+
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+theme: minima
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
