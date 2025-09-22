@@ -12,7 +12,7 @@ plugins:
 theme: minima
 
 include:
-  - .list-of-public-lib-publishers.csv
+  - .list-of-public-lib-publishers.txt
 
 exclude:
   - Gemfile
