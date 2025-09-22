@@ -11,6 +11,9 @@ plugins:
 
 theme: minima
 
+include:
+  - .list-of-public-lib-publishers.csv
+
 exclude:
   - Gemfile
   - Gemfile.lock
