@@ -11,6 +11,8 @@ REXX interpreter implemented in JavaScript, designed to run both in Node.js and 
 
 RexxJS provides a complete REXX environment with modern extensions, making it suitable for everything from simple scripting to complex distributed applications.
 
+**Try it now:** [Online REPL](https://repl.rexxjs.org) - No installation required!
+
 ### Quick Example
 
 ```rexx
