@@ -1,3 +1,8 @@
+---
+layout: default
+title: Reference
+---
+
 # RexxJS Reference Documentation
 
 A comprehensive reference guide to all RexxJS features, organized by category.

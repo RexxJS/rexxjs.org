@@ -5,13 +5,13 @@ title: Home
 
 # RexxJS
 
-REXX interpreter implemented in JavaScript, designed to run both in Node.js and browsers with comprehensive cross-application communication capabilities.
+A modern REXX for JavaScript runtimes. Run classic REXX with powerful new libraries in Node.js, browsers, and standalone binaries — with first-class cross-application messaging.
 
 ## Getting Started
 
-RexxJS provides a complete REXX environment with modern extensions, making it suitable for everything from simple scripting to complex distributed applications.
-
-**Try it now:** [Online REPL](https://repl.rexxjs.org) - No installation required!
+- Try in browser: [Online REPL](https://repl.rexxjs.org)
+- Explore the language: [Reference](reference/00-INDEX.html)
+- Get the code: GitHub (coming soon)
 
 ### Quick Example
 
@@ -22,28 +22,29 @@ LET processed = MAP(data, "x * 2")
 SAY processed
 ```
 
-## Key Features
+## Why RexxJS
 
-- **Complete REXX Language Implementation** - Classic syntax with modern extensions
-- **Cross-Application Communication** - ADDRESS mechanism for external system integration  
-- **Browser Integration** - PostMessage-based communication between iframes
-- **Function Libraries** - 200+ built-in functions across multiple domains
-- **Statistical Computing** - R/SciPy-compatible functions for data analysis
-- **Database Operations** - SQLite integration with full CRUD capabilities
+- Familiar REXX syntax with modern ergonomics
+- 200+ functions across filesystems, strings, math, time, web, and more
+- ADDRESS-based cross-application control for scripts that orchestrate systems
+- Browser-friendly: postMessage channels, iframe control, automation hooks
+- Data tooling: R- and SciPy-inspired helpers for analysis work
+- SQLite integration for lightweight persistence
 
 ## Distribution
 
-- **Standalone Binary** (`./rexx`) - 49MB, no Node.js required
-- **Node.js CLI** (`node core/src/cli.js`) - For development
-- **Test Runner** (`./rexxt`) - With TUI experience
+- Standalone binary `./rexx` — no Node.js required
+- Node.js CLI `node core/src/cli.js` — great for dev
+- Test runner `./rexxt` — TUI experience
 
 ## Use Cases
 
-- Scientific Computing and Data Analysis
-- Web Automation and Browser Control
-- Database Operations and API Integration
-- System Administration
-- Cross-Application Testing
+- Data analysis and automation
+- Web/browser orchestration and testing
+- Database tasks and API integration
+- System administration and scripting
+
+Looking for specifics? Jump to the [Reference](reference/00-INDEX.html).
 
 ---
 

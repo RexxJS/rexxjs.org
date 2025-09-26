@@ -5,32 +5,61 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
     <meta name="description" content="{{ site.description }}">
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="apple-touch-icon" sizes="192x192" href="/assets/favicon-192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="/assets/favicon-512.png">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:title" content="{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}">
+    <meta property="og:description" content="{{ site.description }}">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta property="og:image" content="{{ site.url }}/assets/logo.svg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% if page.title %}{{ page.title }} · {% endif %}{{ site.title }}">
+    <meta name="twitter:description" content="{{ site.description }}">
+    <meta name="twitter:image" content="{{ site.url }}/assets/logo.svg">
     
     <style>
+        :root {
+            --bg: #0b1020;
+            --panel: #121833;
+            --text: #e6ebff;
+            --muted: #9db0ff;
+            --accent: #6aa8ff;
+            --accent-strong: #3b82f6;
+            --border: #1f2a4d;
+            --code-bg: #0d1328;
+        }
+
+        * { box-sizing: border-box; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
+            line-height: 1.7;
+            color: var(--text);
+            margin: 0;
+            background: radial-gradient(1200px 600px at 20% -20%, #1a2455 0%, transparent 60%),
+                        radial-gradient(900px 500px at 120% 0%, #1a2455 0%, transparent 60%),
+                        var(--bg);
         }
         
         h1, h2, h3 { 
-            color: #2c3e50;
+            color: #eaf0ff;
             margin-top: 2em;
         }
         
         h1 { 
-            border-bottom: 2px solid #3498db;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 10px;
         }
         
         pre, code {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #d7e0ff;
         }
         
         pre {
@@ -48,41 +77,71 @@
             background: none;
         }
         
-        .header {
-            text-align: center;
-            margin-bottom: 3em;
-        }
+        .container { max-width: 980px; margin: 0 auto; padding: 24px; }
+        .header { margin: 0; padding: 16px 0 0; }
+        .nav { display:flex; align-items:center; justify-content:space-between; gap:16px; background: linear-gradient(180deg, rgba(18,24,51,0.8), rgba(18,24,51,0.3)); border-bottom: 1px solid var(--border); position: sticky; top: 0; backdrop-filter: blur(8px); z-index: 10; }
+        .brand { display:flex; align-items:center; gap:10px; padding:12px 0; }
+        .brand a { color: var(--text); font-weight:700; font-size:18px; letter-spacing:0.3px; text-decoration:none; }
+        .brand .tag { color: var(--muted); font-weight:500; font-size:14px; }
+        .brand img { height: 28px; width: auto; display:block; border-radius:6px; }
+        .menu { display:flex; gap:14px; }
+        .menu a { color: var(--muted); text-decoration:none; padding:10px 12px; border-radius:8px; border:1px solid transparent; }
+        .menu a:hover { color: var(--text); border-color: var(--border); background: rgba(26,36,85,0.35); }
+        .hero { margin:24px 0 32px; padding:24px; border:1px solid var(--border); background: linear-gradient(180deg, rgba(18,24,51,0.7), rgba(11,16,32,0.8)); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.25); }
+        .home-banner { display:flex; align-items:center; justify-content:center; padding:18px 0 6px; }
+        .home-banner img { width: min(560px, 90%); height:auto; border-radius:12px; box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
+        .cta { display:inline-flex; gap:10px; align-items:center; background: var(--accent-strong); color:#fff; padding:10px 14px; border-radius:10px; text-decoration:none; font-weight:600; }
+        .cta:hover { background:#2563eb; text-decoration:none; }
         
         .footer {
             margin-top: 3em;
             text-align: center;
-            color: #666;
-            border-top: 1px solid #eee;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
             padding-top: 20px;
         }
         
         a {
-            color: #3498db;
+            color: var(--accent);
             text-decoration: none;
         }
         
-        a:hover {
-            text-decoration: underline;
-        }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1><a href="/">{{ site.title }}</a></h1>
-        <p>{{ site.description }}</p>
+    <div class="nav">
+      <div class="container" style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div class="brand">
+            <img src="/assets/favicon.svg" alt="RexxJS logo"/>
+            <a href="/">{{ site.title }}</a>
+            <span class="tag">REXX for JS runtimes</span>
+        </div>
+        <div class="menu">
+            <a href="/">Home</a>
+            <a href="/docs.html">Docs</a>
+            <a href="/reference/00-INDEX.html">Reference</a>
+            <a href="https://repl.rexxjs.org" target="_blank" rel="noopener">REPL</a>
+            <a href="https://github.com/RexxJS/RexxJS" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/RexxJS/rexxjs.org" target="_blank" rel="noopener" title="Site repo">Site</a>
+            <a href="https://github.com/RexxJS/dist" target="_blank" rel="noopener" title="Distributions">Dist</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      {% if page.url == "/" %}
+        <div class="home-banner">
+          <img src="/assets/logo.svg" alt="RexxJS wordmark"/>
+        </div>
+      {% endif %}
+      <main class="hero">
+          {{ content }}
+      </main>
     </div>
     
-    <main>
-        {{ content }}
-    </main>
-    
     <div class="footer">
-        <p>&copy; {{ 'now' | date: "%Y" }} RexxJS Project</p>
+        <p>&copy; {{ 'now' | date: "%Y" }} RexxJS · <a href="https://rexxjs.org">RexxJS.org</a></p>
     </div>
 </body>
 </html>
