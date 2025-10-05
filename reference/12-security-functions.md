@@ -106,7 +106,7 @@ ENDIF
 
 ### HMAC-SHA256
 ```rexx
--- Generate HMAC signature (uses Web Crypto API when available)
+-- Generate HMAC signature (uses Web Cryptography API when available)
 LET signature = HMAC_SHA256 text="message" secret="secret-key"
 
 -- API request signing
@@ -220,7 +220,7 @@ ENDIF
 The crypto functions automatically detect and use available APIs:
 
 ### Browser Environment
-- Uses: Web Crypto API (crypto.subtle)
+- Uses: Web Cryptography API (crypto.subtle)
 - Uses: btoa/atob for base64
 - Uses: crypto.getRandomValues for secure random
 

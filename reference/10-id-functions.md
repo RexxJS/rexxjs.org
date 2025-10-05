@@ -338,7 +338,7 @@ SAY "Loot Drop: " || lootType || " (ID: " || lootId || ")"
 
 ### Cryptographic Randomness
 The ID generation functions use cryptographically secure random sources:
-- **Browser**: Web Crypto API (`crypto.getRandomValues`)
+- **Browser**: Web Cryptography API (`crypto.getRandomValues`)
 - **Node.js**: `crypto.randomBytes` module
 - **Fallback**: Custom implementations maintain security when native APIs unavailable
 

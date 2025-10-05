@@ -109,7 +109,7 @@ LET failed_count = ARRAY_GET array=vars key="count"    -- 42
 **`ERROR_STACK`** - JavaScript Stack Trace
 ```rexx
 SIGNAL ON ERROR NAME Handler
-LET result = CLICK selector="#missing-element"
+LET result = DOM_CLICK selector="#missing-element"
 
 Handler:
 LET js_stack = ERROR_STACK
@@ -121,7 +121,7 @@ SAY js_stack
 ```
 JavaScript call stack:
 Error: DOM click failed: Element not found: #missing-element
-    at CLICK (/path/to/interpreter.js:2920:17)
+    at DOM_CLICK (/path/to/interpreter.js:2920:17)
     at Interpreter.executeFunctionCall (/path/to/interpreter.js:3373:14)
     at Interpreter.executeCommand (/path/to/interpreter.js:3326:39)
     at Interpreter.executeCommands (/path/to/interpreter.js:3272:35)
@@ -367,17 +367,17 @@ EXIT
 SIGNAL ON ERROR NAME DOMErrorHandler
 
 -- DOM automation that might fail
-LET element_count = QUERY selector=".items" operation="count"
+LET element_count = DOM_QUERY selector=".items" operation="count"
 
 DO i = 1 TO element_count
     LET item_selector = ".items:nth-child(" || i || ")"
-    CLICK selector=item_selector
+    DOM_CLICK selector=item_selector
     
     -- Wait for response
-    LET success = WAIT_FOR selector=".success" timeout=2000
+    LET success = DOM_WAIT_FOR selector=".success" timeout=2000
     IF success = false THEN
         -- Force an error to trigger handler
-        CLICK selector="#non-existent-element"
+        DOM_CLICK selector="#non-existent-element"
     ENDIF
 END
 
@@ -396,10 +396,10 @@ SAY "  Processing item: " || current_i
 SAY "  Message: " || ERROR_MESSAGE
 
 -- Attempt recovery
-IF error_func = "CLICK" THEN
+IF error_func = "DOM_CLICK" THEN
     SAY "Click failed, trying alternative selector"
     -- Could implement alternative clicking strategy
-ELSE IF error_func = "WAIT_FOR" THEN
+ELSE IF error_func = "DOM_WAIT_FOR" THEN
     SAY "Wait timeout, continuing anyway"
     -- Continue with next iteration
 ENDIF
@@ -493,7 +493,7 @@ SELECT
         LET result = JSON_PARSE text="invalid json"
     WHEN test_case = 2 THEN
         SAY "Testing DOM error..."
-        CLICK selector="#nonexistent"
+        DOM_CLICK selector="#nonexistent"
     WHEN test_case = 3 THEN
         SAY "Testing math error..."  
         LET result = DIVIDE x=1 y=0

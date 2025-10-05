@@ -2,6 +2,21 @@
 
 Comprehensive cross-reference catalog of all 400+ functions available in the Rexx interpreter, organized by category with implementation status and availability.
 
+## Function Resolution Order
+
+When a function is called, the interpreter resolves it using this priority order:
+
+1. **Built-in REXX functions** (LENGTH, SUBSTR, POS, etc.) - Always available regardless of ADDRESS context
+2. **External functions** from REQUIRE'd libraries
+3. **ADDRESS handler custom methods** - Only checked if not a built-in function
+4. **Browser functions** (executeBrowserStringFunction)
+5. **RPC/fallback** handler
+
+This ensures:
+- Standard REXX functions like `LENGTH()`, `SUBSTR()`, `POS()` always work, even when inside an ADDRESS context
+- ADDRESS handlers can define custom methods without conflicting with built-in functions
+- DOM functions use `DOM_` prefix (`DOM_QUERY`, `DOM_CLICK`, etc.) to avoid naming conflicts with ADDRESS handler methods
+
 ## Legend
 
 ### Status
@@ -122,11 +137,11 @@ Comprehensive cross-reference catalog of all 400+ functions available in the Rex
 - **Hashing**: `HASH_MD5`, `HASH_SHA1`, `HASH_SHA256`, `HASH_SHA512`
 - **Encoding**: `BASE64_ENCODE`, `BASE64_DECODE`, `HEX_ENCODE`, `HEX_DECODE`
 - **Encryption**: `ENCRYPT_AES`, `DECRYPT_AES`
-- Status: 🟡 Crypto API dependent, Both environments
+- Status: 🟡 Web Cryptography API dependent, Both environments
 
 **[ID Generation Functions](10-id-functions.md)** - 2+ functions
 - **Identifiers**: `UUID`, `SECURE_RANDOM`
-- Status: ✅ Built-in crypto (UUID), 🟡 Crypto API dependent (SECURE_RANDOM), Both environments
+- Status: ✅ Built-in crypto (UUID), 🟡 Web Cryptography API dependent (SECURE_RANDOM), Both environments
 
 ### System and Environment Functions
 

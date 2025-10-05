@@ -54,7 +54,7 @@ Functions support multiple parameter types:
 
 ```rexx
 -- Strings (quoted)
-TYPE selector="#input" text="Hello World"
+DOM_TYPE selector="#input" text="Hello World"
 
 -- Numbers (unquoted)
 LET result = MATH_POWER base=2 exponent=10
