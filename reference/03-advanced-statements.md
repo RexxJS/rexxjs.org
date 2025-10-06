@@ -449,3 +449,9 @@ LET final_result = VALIDATE data=processed_data
 - Strings and other primitives are passed by value.
 - Arrays/objects are passed by reference by default.
 - Use `COPY(value)` to deep copy before CALL if you do not want the callee to mutate your original.
+
+**See also:**
+- [Basic Syntax](01-basic-syntax.md) for fundamental language constructs and **pipe operator (`|>`)**
+- [Control Flow](02-control-flow.md) for IF/DO/SELECT statements
+- [String Functions](04-string-functions.md) for parsing alternatives
+- [Error Handling](24-error-handling.md) for SIGNAL ON ERROR patterns

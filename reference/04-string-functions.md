@@ -64,8 +64,8 @@ LET third = WORD string="hello world test" n=3   -- "test"
 LET count = WORDS string="hello world test"      -- 3
 LET empty_count = WORDS string=""                -- 0
 
-LET pos1 = WORDPOS phrase="world" string="hello world test"        -- 2
-LET pos2 = WORDPOS phrase="not found" string="hello world test"    -- 0
+LET pos1 = WORDPOS string="hello world test" phrase="world"        -- 2
+LET pos2 = WORDPOS string="hello world test" phrase="not found"    -- 0
 
 LET del1 = DELWORD string="one two three four" start=2 length=2    -- "one four"
 LET del2 = DELWORD string="one two three four" start=3             -- "one two"
@@ -209,7 +209,18 @@ SAY "Price: '" || formatted || "'"
 SAY "Product code: " || productCode
 ```
 
-**See also:** 
+**See also:**
+- [Basic Syntax](01-basic-syntax.md#pipe-operator) for **pipe operator (`|>`)** to chain string functions
 - [Validation Functions](11-validation-functions.md) for email, phone, and format validation
-- [Basic Syntax](01-basic-syntax.md) for string interpolation
 - [JSON Functions](08-json-functions.md) for string-based data processing
+
+**Pipe operator examples:**
+```rexx
+-- Chain string transformations left-to-right
+LET result = "  hello world  " |> TRIM |> UPPER |> REVERSE
+-- Result: "DLROW OLLEH"
+
+-- Process text with multiple functions
+LET text = "user@example.com" |> LOWER |> TRIM
+-- Result: "user@example.com"
+```

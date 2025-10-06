@@ -27,6 +27,9 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 ### 📝 [Basic Syntax](01-basic-syntax.md)
 - Variable assignment and management
 - Function calls and parameters
+- **Pipe operator (`|>`) for function chaining**
+- Mathematical expressions with operator precedence
+- String concatenation (`||`) vs arithmetic addition (`+`)
 - Comments and code structure
 - String interpolation
 

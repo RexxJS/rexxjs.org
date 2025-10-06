@@ -334,6 +334,17 @@ LET absolute = ABS value=-42              -- Use MATH_ABS for new code
 ```
 
 **See also:**
+- [Basic Syntax](01-basic-syntax.md#pipe-operator) for **pipe operator (`|>`)** and math expressions
 - [Excel Functions](14-excel-functions.md) for spreadsheet-style mathematical operations
 - [Array Functions](06-array-functions.md) for mathematical operations on collections
-- [Basic Syntax](01-basic-syntax.md) for using math functions in expressions
+
+**Pipe operator examples:**
+```rexx
+-- Chain mathematical operations
+LET result = -42 |> ABS |> MATH_SQRT
+-- Result: 6.48074...
+
+-- Combine with arithmetic
+LET value = 5 + 3 |> MATH_POWER exponent=2
+-- Evaluates: (5 + 3) = 8, then 8^2 = 64
+```

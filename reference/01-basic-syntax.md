@@ -90,6 +90,136 @@ DO i = 1 TO result/4
 END
 ```
 
+## Pipe Operator
+
+### Function Chaining with `|>`
+
+The pipe operator `|>` enables elegant left-to-right data flow by passing the result of one expression as the first argument to the next function:
+
+```rexx
+-- Basic piping
+LET result = "hello" |> UPPER
+-- Equivalent to: UPPER string="hello"
+-- Result: "HELLO"
+
+-- Multi-stage pipeline
+LET cleaned = "  hello world  " |> TRIM |> UPPER |> LENGTH
+-- Equivalent to: LENGTH string=UPPER(string=TRIM(string="  hello world  "))
+-- Result: 11
+
+-- Piping with function arguments
+LET words = "a,b,c" |> SPLIT separator=","
+-- Equivalent to: SPLIT string="a,b,c" separator=","
+-- Result: ["a", "b", "c"]
+```
+
+### Complex Data Transformations
+
+The pipe operator excels at building readable data transformation pipelines:
+
+```rexx
+-- String processing pipeline
+LET text = "  HELLO WORLD  "
+LET result = text |> TRIM |> LOWER |> SPLIT separator=" " |> ARRAY_LENGTH
+-- Result: 2
+
+-- Combining arithmetic and piping
+LET value = 5 + 3 |> ABS |> MATH_POWER exponent=2
+-- Evaluates: (5 + 3) = 8, then ABS(8) = 8, then MATH_POWER(8, 2) = 64
+
+-- Array processing
+LET data = "apple,banana,cherry"
+LET count = data |> SPLIT separator="," |> ARRAY_LENGTH
+-- Result: 3
+```
+
+### Operator Precedence
+
+The pipe operator has the **lowest precedence** of all operators, meaning arithmetic expressions are evaluated first:
+
+```rexx
+LET result = 10 * 2 |> ABS
+-- Evaluates as: (10 * 2) |> ABS = 20 |> ABS = 20
+
+LET value = 5 + 3 |> UPPER
+-- ❌ Error: (5 + 3) = 8, then UPPER(8) - numbers can't be uppercased
+
+-- Use parentheses to control precedence
+LET text = ("Hello" |> UPPER) || " World"
+-- Result: "HELLO World"
+```
+
+### Pipe-Friendly Functions
+
+Functions where data is the first parameter work naturally with piping:
+
+**String Functions** (see [String Functions](04-string-functions.md)):
+- `UPPER`, `LOWER`, `TRIM`, `REVERSE`, `LENGTH`
+- `SLUG`, `WORD_FREQUENCY`, `SENTIMENT_ANALYSIS`
+
+**Array Functions** (see [Array Functions](06-array-functions.md)):
+- `ARRAY_LENGTH`, `ARRAY_REVERSE`, `ARRAY_UNIQUE`, `ARRAY_FLATTEN`
+- `ARRAY_MIN`, `ARRAY_MAX`, `ARRAY_SUM`, `ARRAY_AVERAGE`
+
+**Encoding Functions** (see [Web Functions](09-web-functions.md)):
+- `BASE64_ENCODE`, `BASE64_DECODE`
+- `URL_ENCODE`, `URL_DECODE`
+
+**Validation Functions** (see [Validation Functions](11-validation-functions.md)):
+- `IS_EMAIL`, `IS_URL`, `IS_NUMBER`, `IS_INTEGER`
+
+### String Concatenation vs Addition
+
+**Important:** RexxJS follows strict REXX semantics for operators:
+
+```rexx
+-- ✅ Arithmetic addition (numeric operands only)
+LET sum = 100 + 11          -- Result: 111
+LET total = "50" + "25"     -- Result: 75 (automatic numeric coercion)
+
+-- ❌ String concatenation with + is NOT supported
+LET text = "Hello" + " World"  -- Error: "Hello" is not a number
+
+-- ✅ Use || for string concatenation
+LET greeting = "Hello" || " World"  -- Result: "Hello World"
+LET fullName = firstName || " " || lastName
+
+-- Combining pipes and concatenation
+LET result = "hello" |> UPPER || " WORLD"
+-- Result: "HELLO WORLD"
+```
+
+### Best Practices
+
+**Use pipes for readability:**
+```rexx
+-- ❌ Hard to read (nested function calls)
+LET result = ARRAY_LENGTH array=SPLIT string=TRIM string=UPPER string=text separator=" "
+
+-- ✅ Easy to read (left-to-right flow)
+LET result = text |> UPPER |> TRIM |> SPLIT separator=" " |> ARRAY_LENGTH
+```
+
+**Multi-line pipelines for clarity:**
+```rexx
+-- Format complex pipelines across multiple lines
+LET result = rawData
+  |> TRIM
+  |> LOWER
+  |> SPLIT separator=","
+  |> ARRAY_UNIQUE
+  |> ARRAY_LENGTH
+```
+
+**Know when NOT to use pipes:**
+```rexx
+-- Functions where data is NOT the first parameter
+LET position = POS needle="world" haystack="hello world"  -- Can't pipe efficiently
+
+-- Simple single function calls
+LET upper = UPPER string="hello"  -- No need for pipe here
+```
+
 ## String Interpolation
 
 ### Variable Interpolation in Strings

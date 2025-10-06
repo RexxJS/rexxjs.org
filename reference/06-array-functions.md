@@ -375,7 +375,25 @@ SAY "Odd numbers: " || ARRAY_LENGTH(array=oddNumbers)
 - `ARRAY_AVERAGE(array)` - Calculate average of numeric elements
 
 **See also:**
+- [Basic Syntax](01-basic-syntax.md#pipe-operator) for **pipe operator (`|>`)** to chain array functions
 - [JSON Functions](08-json-functions.md) for working with JSON arrays
 - [Math Functions](05-math-functions.md) for numerical processing
 - [Control Flow](02-control-flow.md) for iteration patterns
 - [String Functions](04-string-functions.md) for string array processing
+
+**Pipe operator examples:**
+```rexx
+-- Chain array transformations
+LET result = [1, 2, 3, 4, 5] |> ARRAY_REVERSE |> ARRAY_SUM
+-- Result: 15
+
+-- Process CSV data
+LET data = "apple,banana,cherry,banana"
+LET uniqueCount = data |> SPLIT separator="," |> ARRAY_UNIQUE |> ARRAY_LENGTH
+-- Result: 3
+
+-- Data pipeline
+LET numbers = [5, 2, 8, 1, 9]
+LET max = numbers |> ARRAY_SORT order="desc" |> ARRAY_FIRST
+-- Result: 9
+```

@@ -135,14 +135,14 @@ SAY "25th percentile: " || percentile25
 ```rexx
 -- Basic vertical lookup
 LET employeeTable = '[["John", 50000], ["Alice", 60000], ["Bob", 55000], ["Carol", 62000]]'
-LET johnSalary = VLOOKUP lookupValue="John" tableArray=employeeTable columnIndex=2
+LET johnSalary = VLOOKUP tableArray=employeeTable lookupValue="John" columnIndex=2
 
 SAY "John's salary: $" || johnSalary
 
 -- Product pricing lookup
 LET priceTable = '[["Basic", 99], ["Standard", 199], ["Premium", 399], ["Enterprise", 999]]'
 LET customerTier = "Premium"
-LET basePrice = VLOOKUP lookupValue=customerTier tableArray=priceTable columnIndex=2
+LET basePrice = VLOOKUP tableArray=priceTable lookupValue=customerTier columnIndex=2
 
 SAY "Base price for " || customerTier || ": $" || basePrice
 
@@ -151,7 +151,7 @@ LET taxBrackets = '[["0-25000", 0.10], ["25001-50000", 0.15], ["50001-100000", 0
 LET income = 75000
 
 -- Find appropriate bracket (simplified)
-LET taxRate = VLOOKUP lookupValue="50001-100000" tableArray=taxBrackets columnIndex=2
+LET taxRate = VLOOKUP tableArray=taxBrackets lookupValue="50001-100000" columnIndex=2
 SAY "Tax rate for $" || income || ": " || (taxRate * 100) || "%"
 ```
 
@@ -159,13 +159,13 @@ SAY "Tax rate for $" || income || ": " || (taxRate * 100) || "%"
 ```rexx
 -- Horizontal lookup in tables
 LET quarterlyData = '[["Q1", "Q2", "Q3", "Q4"], [15000, 18000, 22000, 25000]]'
-LET q3Revenue = HLOOKUP lookupValue="Q3" tableArray=quarterlyData rowIndex=2
+LET q3Revenue = HLOOKUP tableArray=quarterlyData lookupValue="Q3" rowIndex=2
 
 SAY "Q3 Revenue: $" || q3Revenue
 
 -- Monthly performance lookup
 LET monthlyPerf = '[["Jan", "Feb", "Mar", "Apr"], [95, 87, 92, 98]]'
-LET marchScore = HLOOKUP lookupValue="Mar" tableArray=monthlyPerf rowIndex=2
+LET marchScore = HLOOKUP tableArray=monthlyPerf lookupValue="Mar" rowIndex=2
 
 SAY "March performance: " || marchScore || "%"
 ```
@@ -180,7 +180,7 @@ SAY "Third month sales: $" || thirdMonth
 
 -- Find position of value
 LET targetSales = 18000
-LET position = MATCH lookupValue=targetSales lookupArray=salesData
+LET position = MATCH lookupArray=salesData lookupValue=targetSales
 
 IF position > 0 THEN
     SAY "Target sales achieved in month: " || position
@@ -193,7 +193,7 @@ LET productNames = "[\"Widget A\", \"Widget B\", \"Widget C\", \"Widget D\"]"
 LET productPrices = "[25.99, 45.50, 12.75, 89.00]"
 LET searchProduct = "Widget C"
 
-LET productIndex = MATCH lookupValue=searchProduct lookupArray=productNames
+LET productIndex = MATCH lookupArray=productNames lookupValue=searchProduct
 LET productPrice = INDEX array=productPrices row=productIndex
 
 SAY searchProduct || " costs: $" || productPrice
@@ -411,7 +411,7 @@ LET customerTier = "Premium"
 LET quantity = 150
 
 -- Base price lookup
-LET basePrice = VLOOKUP lookupValue=customerTier tableArray=priceTable columnIndex=2
+LET basePrice = VLOOKUP tableArray=priceTable lookupValue=customerTier columnIndex=2
 
 -- Volume discount calculation
 LET volumeDiscount = IF condition=(quantity >= 100) trueValue=0.15 falseValue=IF(condition=(quantity >= 50) trueValue=0.10 falseValue=0.05)
@@ -539,10 +539,10 @@ Excel functions include comprehensive error handling for invalid inputs, divisio
 - `PERCENTILE(array, k)` - Percentile calculation
 
 ### Lookup Functions
-- `VLOOKUP(lookupValue, tableArray, columnIndex)` - Vertical lookup
-- `HLOOKUP(lookupValue, tableArray, rowIndex)` - Horizontal lookup  
+- `VLOOKUP(tableArray, lookupValue, columnIndex)` - Vertical lookup
+- `HLOOKUP(tableArray, lookupValue, rowIndex)` - Horizontal lookup
 - `INDEX(array, row)` - Get value at index
-- `MATCH(lookupValue, lookupArray)` - Find position of value
+- `MATCH(lookupArray, lookupValue)` - Find position of value
 
 ### Text Functions
 - `CONCATENATE(a, separator, b, ...)` - Join strings

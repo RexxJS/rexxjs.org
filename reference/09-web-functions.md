@@ -452,7 +452,19 @@ When using `URL_PARSE`, the returned object contains:
 - Cross-platform support with native browser/Node.js APIs and fallbacks
 
 **See also:**
+- [Basic Syntax](01-basic-syntax.md#pipe-operator) for **pipe operator (`|>`)** to chain encoding functions
 - [Security Functions](12-security-functions.md) for additional encoding and hashing
-- [JSON Functions](08-json-functions.md) for API data processing  
+- [JSON Functions](08-json-functions.md) for API data processing
 - [String Functions](04-string-functions.md) for URL string manipulation
 - [File System Functions](13-filesystem-functions.md) for HTTP resource access
+
+**Pipe operator examples:**
+```rexx
+-- Chain encoding operations
+LET encoded = "Hello World" |> URL_ENCODE |> BASE64_ENCODE
+-- First URL-encodes, then Base64-encodes the result
+
+-- Process and encode data
+LET data = "  user@example.com  " |> TRIM |> LOWER |> URL_ENCODE
+-- Result: "user%40example.com"
+```

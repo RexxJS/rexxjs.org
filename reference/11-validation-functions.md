@@ -746,7 +746,22 @@ ENDIF
 - `CHECK_TYPES(data, types)` - Dynamic type checking with union type support
 
 **See also:**
+- [Basic Syntax](01-basic-syntax.md#pipe-operator) for **pipe operator (`|>`)** to chain validation with processing
 - [String Functions](04-string-functions.md) for string manipulation and regex
 - [JSON Functions](08-json-functions.md) for validating JSON data
 - [Math Functions](05-math-functions.md) for numeric validation helpers
 - [Date/Time Functions](07-datetime-functions.md) for date validation details
+
+**Pipe operator examples:**
+```rexx
+-- Validate and process email
+LET email = "  USER@EXAMPLE.COM  " |> TRIM |> LOWER
+IF email |> IS_EMAIL THEN
+  SAY "Valid email: " || email
+END
+
+-- Chain validation with transformation
+LET input = "12345"
+LET isValid = input |> IS_NUMBER
+LET value = input |> ABS  -- If valid, convert to number
+```
