@@ -151,6 +151,23 @@ This ensures:
 - **Directory operations**: `FILE_CREATE_DIR`, `FILE_REMOVE_DIR`
 - Status: 🟡 Environment dependent (localStorage/OPFS browser, fs Node.js), Both environments
 
+**Environment Variables** - 1 function
+- **OS environment access**: `GETENV(varname)` - Read OS environment variables
+- Returns empty string if variable doesn't exist
+- Status: 🟡 Node.js only (no process.env in browser)
+- Example: `SAY "User: " || GETENV("USER")`
+
+**Runtime Detection Variables** - 6 built-in variables
+- **Execution environment**: `RUNTIME.TYPE` - "nodejs", "browser", or "pkg"
+- **Version info**: `RUNTIME.NODE_VERSION` - Node.js version string
+- **Package detection**: `RUNTIME.IS_PKG` - "1" if running as pkg executable, "0" otherwise
+- **Capability flags**:
+  - `RUNTIME.HAS_NODEJS_REQUIRE` - "1" if require() available
+  - `RUNTIME.HAS_WINDOW` - "1" if window object available
+  - `RUNTIME.HAS_DOM` - "1" if DOM manipulation available
+- Status: ✅ Pure JS, All modes (automatically set by interpreter at startup)
+- Example: `IF RUNTIME.TYPE = "nodejs" THEN SAY "Running in Node.js"`
+
 **[DOM Functions](18-dom-functions.md)** - 11+ functions
 - **Element interaction**: `DOM_ELEMENT_CLICK`, `DOM_ELEMENT_TYPE`, `DOM_ELEMENT_TEXT`
 - **Element queries**: `DOM_GET`, `DOM_ELEMENT_QUERY`, `DOM_ELEMENT_VISIBLE`
