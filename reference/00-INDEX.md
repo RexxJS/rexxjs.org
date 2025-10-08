@@ -89,8 +89,20 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 ### 🎯 [ID Generation Functions](10-id-functions.md)
 - UUID generation (RFC4122)
 - Short IDs (NANOID)
-- Random data generation
+- Random data generation (SECURE_RANDOM, MCOOKIE)
+- Temporary file paths (MKTEMP)
 - Cryptographic security
+
+### 💻 System Information Functions
+- User info (WHOAMI, USERINFO, LOGNAME, GROUPS)
+- System details (HOSTNAME, UNAME, ARCH, NPROC, UPTIME, DNSDOMAINNAME)
+- Environment variables (ENV, GETENV)
+- System configuration (GETCONF)
+- Terminal detection (TTY)
+- Network info (IFCONFIG, HOST)
+- Compression (GZIP, GUNZIP, ZCAT)
+- Process management (KILL, TIME)
+- Utilities (SEQ, SHUF, FACTOR, CAL, WHICH, GETOPT, XARGS, ASCII, SLEEP, TRUE, FALSE, YES)
 
 ### ✅ [Validation Functions](11-validation-functions.md)
 - Email, URL, and phone number validation
@@ -99,16 +111,23 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 - Financial and geographic validation
 
 ### 🔒 [Security Functions](12-security-functions.md)
-- Hashing (SHA256, SHA1, MD5)
+- Hash functions (MD5, SHA1, SHA256, SHA384, SHA512)
+- Checksums (CKSUM, CRC32, SUM_BSD)
+- Encoding (BASE64, BASE32, HEX, UUENCODE, UUDECODE)
+- Hex utilities (XXD, HEXDUMP, OD)
+- Password hashing (MKPASSWD)
 - HMAC generation
-- Password hashing and verification
 - JWT token handling
 - Cryptographic operations
 
 ### 💾 [File System Functions](13-filesystem-functions.md)
+- Unix file operations (CAT, CP, MV, RM, TOUCH, LINK, LN, TRUNCATE, UNLINK)
+- Directory operations (MKDIR, RMDIR, LS, FIND, DU)
+- Path utilities (BASENAME, DIRNAME, PATH_RESOLVE, READLINK)
+- File permissions (CHMOD, CHOWN, CHGRP, INSTALL)
+- File comparison (CMP, COMM) and disk usage (DU)
+- File synchronization (FSYNC, SYNC)
 - Unified localStorage and HTTP resource access
-- File operations (read, write, copy, move, delete)
-- File discovery and listing with patterns
 - Backup management and data persistence
 
 ### 📈 [Excel Functions](14-excel-functions.md)
@@ -261,8 +280,9 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 ## Reference Materials
 
 ### 📚 [Function Reference](35-function-reference.md)
-- Comprehensive cross-reference catalog (400+ functions)
+- Comprehensive cross-reference catalog (470+ functions)
 - Implementation status and environment compatibility
+- Unix-style command-line tools (85+ text and file operations)
 - Function availability by category and use case
 - Cross-reference index for all built-in functions
 
@@ -284,8 +304,9 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 
 ---
 
-**Total Functions:** 400+ built-in functions across all categories
+**Total Functions:** 470+ built-in functions across all categories
 **Language Features:** Complete Rexx implementation with modern enhancements
+**Unix Compatibility:** 85+ Unix command-line tools for text and file operations
 **Security:** Sandboxing, isolation, and cryptographic functions built-in
 ### 📚 [Function Libraries](12-function-libraries.md)
 - Built‑ins vs third‑party

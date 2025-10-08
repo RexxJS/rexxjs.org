@@ -570,6 +570,182 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 ```
 
+## Operations and Functions in Libraries
+
+RexxJS libraries can export both **operations** (imperative commands) and **functions** (query/expression calls), enabling a clean separation between state-changing actions and data retrieval.
+
+### Library Structure with Operations and Functions
+
+```javascript
+/*!
+ * bathhouse-library v1.0.0 | MIT License
+ * @rexxjs-meta=BATHHOUSE_FUNCTIONS_MAIN
+ */
+
+// Metadata provider function
+function BATHHOUSE_FUNCTIONS_META() {
+  return {
+    canonical: "org.rexxjs.examples/bathhouse",
+    type: "functions-library",
+    name: 'Bathhouse Functions',
+    version: '1.0.0',
+    description: 'Example library with operations and functions',
+    functions: {
+      'GUEST_STATUS': { description: 'Get guest status', params: ['guest'] },
+      'COUNT_TOKENS': { description: 'Count issued tokens', params: [] },
+      'IDENTIFY_SPIRIT': { description: 'Identify spirit', params: ['description'] }
+    },
+    operations: {
+      'SERVE_GUEST': { description: 'Serve a guest', params: ['guest', 'bath'] },
+      'CLEAN_BATHHOUSE': { description: 'Clean area', params: ['area', 'intensity'] },
+      'ISSUE_TOKEN': { description: 'Issue work token', params: ['worker', 'task'] }
+    },
+    detectionFunction: 'BATHHOUSE_FUNCTIONS_MAIN'
+  };
+}
+
+// State for operations to modify
+const bathhouse = {
+  guests: new Map(),
+  tokens: [],
+  log: []
+};
+
+// Operations: Side-effect commands (receive params object)
+const bathhouseOperations = {
+  'SERVE_GUEST': function(params) {
+    const { guest, bath = 'regular' } = params;
+    bathhouse.guests.set(guest, { bath, served: true });
+    bathhouse.log.push(`Served ${guest} in ${bath} bath`);
+    return { success: true };
+  },
+
+  'CLEAN_BATHHOUSE': function(params) {
+    const { area = 'main_hall', intensity = 'normal' } = params;
+    bathhouse.log.push(`Cleaned ${area} (${intensity})`);
+    return { success: true };
+  },
+
+  'ISSUE_TOKEN': function(params) {
+    const { worker, task = 'cleaning' } = params;
+    bathhouse.tokens.push({ worker, task, issued: Date.now() });
+    bathhouse.log.push(`Issued token to ${worker}`);
+    return { success: true };
+  }
+};
+
+// Functions: Query operations (receive positional args)
+const bathhouseFunctions = {
+  'GUEST_STATUS': function(guest) {
+    const guestData = bathhouse.guests.get(guest);
+    return guestData ? 'satisfied' : 'not_found';
+  },
+
+  'COUNT_TOKENS': function() {
+    return bathhouse.tokens.length;
+  },
+
+  'IDENTIFY_SPIRIT': function(description) {
+    const spirits = {
+      'muddy': 'river_spirit',
+      'hungry': 'no_face',
+      'quiet': 'radish_spirit'
+    };
+    return spirits[description] || 'unknown_spirit';
+  }
+};
+
+// Combine all exports
+const bathhouseFunctionsAll = {
+  // Detection function (required by REQUIRE system)
+  'BATHHOUSE_FUNCTIONS_MAIN': () => BATHHOUSE_FUNCTIONS_META(),
+
+  // Functions (return values)
+  ...bathhouseFunctions,
+
+  // Operations (side effects)
+  ...bathhouseOperations
+};
+
+// Dual environment export
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = bathhouseFunctionsAll;
+} else if (typeof window !== 'undefined') {
+  Object.assign(window, bathhouseFunctionsAll);
+}
+```
+
+### Using Operations and Functions
+
+```rexx
+-- Load library with both operations and functions
+REQUIRE "cwd:libs/bathhouse-library.js"
+
+-- Operations: Imperative commands (no parentheses)
+SERVE_GUEST guest="river_spirit" bath="herbal"
+CLEAN_BATHHOUSE area="main_hall" intensity="deep"
+ISSUE_TOKEN worker="chihiro" task="cleaning"
+
+-- Functions: Query operations (with parentheses)
+LET capacity = BATHHOUSE_CAPACITY()
+LET spirit = IDENTIFY_SPIRIT(description="muddy")
+LET count = COUNT_TOKENS()
+
+-- Functions support both positional and named parameters
+LET spirit1 = IDENTIFY_SPIRIT("hungry")            -- Positional
+LET spirit2 = IDENTIFY_SPIRIT(description="quiet") -- Named
+
+-- Named parameters work in pipe operator
+LET result = "  hello  " |> STRIP() |> SUBSTR(start=2, length=3)
+```
+
+### Using REQUIRE AS with Operations and Functions
+
+```rexx
+-- Prefix both operations and functions
+REQUIRE "cwd:libs/bathhouse-library.js" AS bh_(.*)
+
+-- Operations with prefix
+bh_SERVE_GUEST guest="no_face" bath="luxury"
+bh_CLEAN_BATHHOUSE area="lobby"
+
+-- Functions with prefix
+LET capacity = bh_BATHHOUSE_CAPACITY()
+LET log = bh_GET_LOG()
+LET spirit = bh_IDENTIFY_SPIRIT(description="hungry")
+```
+
+### Key Differences
+
+| Feature | Operations | Functions |
+|---------|-----------|-----------|
+| **Call Syntax** | No parentheses | Always use parentheses |
+| **Parameters** | Named only (object) | Positional OR named |
+| **Purpose** | Side effects, state changes | Return values, queries |
+| **In Expressions** | ❌ Not allowed | ✅ Works everywhere |
+| **In Pipes** | ❌ Not allowed | ✅ Full support |
+| **Registration** | Via metadata `operations` | Via metadata `functions` |
+
+### Parameter Handling
+
+**Operations receive params object:**
+```javascript
+'SERVE_GUEST': function(params) {
+  const { guest, bath = 'regular' } = params;
+  // params is the raw named parameters object
+}
+```
+
+**Functions receive positional args:**
+```javascript
+'IDENTIFY_SPIRIT': function(description) {
+  // description is the first positional arg
+  // parameter-converter handles named → positional conversion
+}
+```
+
+When called with named params `IDENTIFY_SPIRIT(description="muddy")`, the parameter-converter transforms it to `IDENTIFY_SPIRIT("muddy")` before calling the function.
+
 ### Build Script Example
 
 ```json

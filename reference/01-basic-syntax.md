@@ -27,43 +27,97 @@ LET result = base + multiplier * 4    -- Evaluates to 22
 createMeal potatoes=base*2 chicken=result/5
 ```
 
-## Function Calls
+## Operations vs Functions
 
-### Basic Function Calls
+RexxJS distinguishes between two types of callable code:
+
+### Operations (Imperative Commands)
+Operations are side-effect actions called **without parentheses**:
+
 ```rexx
-functionName param1=value1 param2=value2
+-- Load a library with operations
+REQUIRE "cwd:libs/bathhouse.js"
+
+-- Operations: imperative commands (no parentheses)
+SERVE_GUEST guest="river_spirit" bath="herbal"
+CLEAN_BATHHOUSE area="main_hall" intensity="deep"
+ISSUE_TOKEN worker="chihiro" task="cleaning"
 ```
 
-**Examples:**
-```rexx
--- String functions
-LET upper = UPPER string="hello world"
-LET length = LENGTH string=upper
+**Characteristics:**
+- ❌ No parentheses in call syntax
+- ✅ Named parameters only (passed as object)
+- ✅ Used for state changes and side effects
+- ❌ Cannot be used in expressions or pipes
+- ✅ Loaded via REQUIRE alongside functions
 
--- Math functions  
-LET maximum = MAX x=10 y=25 z=15
-LET absolute = ABS value=-42
+### Functions (Expressions)
+Functions are pure/query operations called **with parentheses**:
+
+```rexx
+-- Functions: expressions (with parentheses, return values)
+LET capacity = BATHHOUSE_CAPACITY()
+LET count = COUNT_TOKENS()
+LET spirit = IDENTIFY_SPIRIT(description="muddy")
+
+-- String functions
+LET upper = UPPER(string="hello world")
+LET length = LENGTH(string=upper)
+
+-- Math functions
+LET maximum = MAX(x=10, y=25, z=15)
+LET absolute = ABS(value=-42)
 
 -- Utility functions
-LET today = DATE
-LET timestamp = NOW
+LET today = DATE()
+LET timestamp = NOW()
 ```
+
+**Characteristics:**
+- ✅ Always use parentheses (even if no params)
+- ✅ Support both positional AND named parameters
+- ✅ Can be used in expressions, assignments, pipes
+- ✅ Parameters converted via parameter-converter
+- ✅ Work with pipe operator: `data |> FUNC(param=val)`
+
+### Named vs Positional Parameters
+
+Functions support **both parameter styles** interchangeably:
+
+```rexx
+-- Positional parameters
+LET sub1 = SUBSTR("hello world", 7, 5)    -- "world"
+LET spirit1 = IDENTIFY_SPIRIT("muddy")     -- "river_spirit"
+
+-- Named parameters
+LET sub2 = SUBSTR(start=7, length=5)       -- Works with piped data
+LET spirit2 = IDENTIFY_SPIRIT(description="hungry")  -- "no_face"
+
+-- Named parameters in pipes
+LET result = "hello world" |> SUBSTR(start=7, length=5)  -- "world"
+LET cleaned = "  text  " |> STRIP() |> SUBSTR(start=2, length=3)  -- "ext"
+```
+
+**Parameter Conversion:**
+- The parameter-converter translates named params to positional args
+- Functions like `SUBSTR`, `POS`, `WORDPOS` designed for data-first piping
+- Piped value becomes first argument, named params fill remaining positions
 
 ### Parameter Types
 Functions support multiple parameter types:
 
 ```rexx
 -- Strings (quoted)
-DOM_TYPE selector="#input" text="Hello World"
+DOM_TYPE(selector="#input", text="Hello World")
 
 -- Numbers (unquoted)
-LET result = MATH_POWER base=2 exponent=10
+LET result = MATH_POWER(base=2, exponent=10)
 
 -- Booleans
-LET valid = IS_EMAIL email="user@example.com"
+LET valid = IS_EMAIL(email="user@example.com")
 
 -- Expressions
-LET calculated = MAX x=base*2 y=multiplier+5 z=10
+LET calculated = MAX(x=base*2, y=multiplier+5, z=10)
 ```
 
 ## Mathematical Expressions
@@ -98,19 +152,29 @@ The pipe operator `|>` enables elegant left-to-right data flow by passing the re
 
 ```rexx
 -- Basic piping
-LET result = "hello" |> UPPER
--- Equivalent to: UPPER string="hello"
+LET result = "hello" |> UPPER()
+-- Equivalent to: UPPER(string="hello")
 -- Result: "HELLO"
 
 -- Multi-stage pipeline
-LET cleaned = "  hello world  " |> TRIM |> UPPER |> LENGTH
--- Equivalent to: LENGTH string=UPPER(string=TRIM(string="  hello world  "))
+LET cleaned = "  hello world  " |> TRIM() |> UPPER() |> LENGTH()
+-- Equivalent to: LENGTH(string=UPPER(string=TRIM(string="  hello world  ")))
 -- Result: 11
 
--- Piping with function arguments
-LET words = "a,b,c" |> SPLIT separator=","
--- Equivalent to: SPLIT string="a,b,c" separator=","
+-- Piping with named parameters
+LET words = "a,b,c" |> SPLIT(separator=",")
+-- Equivalent to: SPLIT(string="a,b,c", separator=",")
 -- Result: ["a", "b", "c"]
+
+-- Named parameters in chained pipes
+LET result = "hello world" |> SUBSTR(start=7, length=5)
+-- Piped value becomes first arg, named params fill rest
+-- Equivalent to: SUBSTR(string="hello world", start=7, length=5)
+-- Result: "world"
+
+-- Complex pipeline with named parameters
+LET processed = "  hello  " |> STRIP() |> SUBSTR(start=2, length=3)
+-- Result: "ell"
 ```
 
 ### Complex Data Transformations

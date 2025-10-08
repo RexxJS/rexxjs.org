@@ -17,6 +17,79 @@ This ensures:
 - ADDRESS handlers can define custom methods without conflicting with built-in functions
 - DOM functions use `DOM_` prefix (`DOM_QUERY`, `DOM_CLICK`, etc.) to avoid naming conflicts with ADDRESS handler methods
 
+## Operations vs Functions
+
+RexxJS distinguishes between two types of callable code:
+
+### Operations (Imperative Commands)
+Operations are **side-effect actions** called **without parentheses**:
+- ❌ No parentheses in call syntax
+- ✅ Named parameters only (passed as params object)
+- ✅ Used for state changes and side effects
+- ❌ Cannot be used in expressions or pipes
+- ✅ Loaded via REQUIRE alongside functions
+
+**Example:**
+```rexx
+REQUIRE "cwd:libs/bathhouse.js"
+SERVE_GUEST guest="river_spirit" bath="herbal"
+CLEAN_BATHHOUSE area="main_hall" intensity="deep"
+```
+
+### Functions (Expressions)
+Functions are **pure/query operations** called **with parentheses**:
+- ✅ Always use parentheses (even if no parameters)
+- ✅ Support both positional AND named parameters
+- ✅ Can be used in expressions, assignments, pipes
+- ✅ Parameters converted via parameter-converter
+- ✅ Work with pipe operator: `data |> FUNC(param=val)`
+
+**Example:**
+```rexx
+-- Positional parameters
+LET upper = UPPER("hello")
+LET sub = SUBSTR("hello world", 7, 5)  -- "world"
+
+-- Named parameters
+LET spirit = IDENTIFY_SPIRIT(description="muddy")
+LET sub2 = SUBSTR(start=7, length=5)  -- Works with piped data
+
+-- Named parameters in pipe operator
+LET result = "hello world" |> SUBSTR(start=7, length=5)  -- "world"
+LET cleaned = "  text  " |> STRIP() |> SUBSTR(start=2, length=3)  -- "ext"
+```
+
+### Named Parameters Support
+
+**All functions** support both positional and named parameters interchangeably:
+
+```rexx
+-- Traditional positional style
+LET result1 = SUBSTR("hello world", 7, 5)       -- "world"
+LET index1 = POS("world", "hello world")        -- 7
+LET word1 = WORDPOS("brown", "the quick brown") -- 3
+
+-- Modern named style (data-first design for pipes)
+LET result2 = "hello world" |> SUBSTR(start=7, length=5)       -- "world"
+LET index2 = "hello world" |> POS(needle="world")              -- 7
+LET word2 = "the quick brown" |> WORDPOS(phrase="brown")       -- 3
+```
+
+**How It Works:**
+1. Parser accepts both positional and named syntax
+2. Parameter-converter translates named params to positional args
+3. Functions receive clean positional arguments
+4. Pipe operator integrates seamlessly with named params
+
+**Data-First Functions:**
+Many functions are designed for pipe compatibility where the data flows first:
+- String functions: `SUBSTR`, `POS`, `WORDPOS`, `LASTPOS`, `STRIP`, `TRIM`
+- Array functions: `ARRAY_LENGTH`, `ARRAY_MAP`, `ARRAY_FILTER`, `ARRAY_SLICE`
+- Validation: `IS_EMAIL`, `IS_URL`, `IS_NUMBER`
+- Encoding: `BASE64_ENCODE`, `URL_ENCODE`
+
+See [Basic Syntax](01-basic-syntax.md) for complete documentation.
+
 ## Legend
 
 ### Status
@@ -35,10 +108,17 @@ This ensures:
 
 ### Core Language Functions
 
-**[String Functions](04-string-functions.md)** - 25+ functions
-- Basic operations: `LENGTH`, `UPPER`, `LOWER`, `SUBSTRING`, `INDEXOF`
-- Advanced processing: `SPLIT`, `JOIN`, `REPLACE`, `TRIM`, `PADLEFT`
-- Text manipulation: `CAPITALIZE`, `TITLECASE`, `SWAPCASE`, `REVERSE`
+**[String Functions](04-string-functions.md)** - 60+ functions
+- **Basic operations**: `LENGTH`, `UPPER`, `LOWER`, `SUBSTRING`, `INDEXOF`
+- **Advanced processing**: `SPLIT`, `JOIN`, `REPLACE`, `TRIM`, `PADLEFT`
+- **Text manipulation**: `CAPITALIZE`, `TITLECASE`, `SWAPCASE`, `REVERSE`
+- **Text processing**: `HEAD`, `TAIL`, `WC`, `CUT`, `PASTE`, `SORT`, `UNIQ`, `GREP`
+- **Line operations**: `NL`, `TAC`, `REV` - Number lines, reverse line order, reverse each line
+- **Text formatting**: `FOLD`, `FMT`, `EXPAND` - Wrap lines, format paragraphs, tabs to spaces
+- **Line endings**: `DOS2UNIX`, `UNIX2DOS` - Convert between Windows/Unix line endings
+- **String extraction**: `STRINGS` - Extract printable strings from data
+- **Stream editing**: `SED`, `TRANSLATE` (tr) - Stream editor and character translation
+- **File splitting**: `FILESPLIT`, `TEE` - Split files into chunks, duplicate output
 - Status: ✅ Pure JS, All modes
 
 **[Mathematical Functions](05-math-functions.md)** - 25+ functions  
@@ -133,29 +213,55 @@ This ensures:
 - **Encoding**: `URL_ENCODE`, `URL_DECODE`, `URL_PARSE`
 - Status: ✅ Pure JS, Both environments
 
-**[Security Functions](12-security-functions.md)** - 10+ functions
-- **Hashing**: `HASH_MD5`, `HASH_SHA1`, `HASH_SHA256`, `HASH_SHA512`
-- **Encoding**: `BASE64_ENCODE`, `BASE64_DECODE`, `HEX_ENCODE`, `HEX_DECODE`
+**[Security Functions](12-security-functions.md)** - 25+ functions
+- **Hash functions**: `HASH_MD5`, `HASH_SHA1`, `HASH_SHA256`, `HASH_SHA384`, `HASH_SHA512`
+- **Checksums**: `CKSUM`, `CRC32`, `SUM_BSD` - POSIX and BSD checksums
+- **Encoding**: `BASE64_ENCODE`, `BASE64_DECODE`, `BASE32`, `HEX_ENCODE`, `HEX_DECODE`
+- **Unix encoding**: `UUENCODE`, `UUDECODE` - Classic Unix encoding/decoding
+- **Hex utilities**: `XXD`, `HEXDUMP`, `OD` - Hex/octal dumps with encode/decode
 - **Encryption**: `ENCRYPT_AES`, `DECRYPT_AES`
+- **Password hashing**: `MKPASSWD` - bcrypt-compatible password hashing
 - Status: 🟡 Web Cryptography API dependent, Both environments
 
-**[ID Generation Functions](10-id-functions.md)** - 2+ functions
-- **Identifiers**: `UUID`, `SECURE_RANDOM`
+**[ID Generation Functions](10-id-functions.md)** - 4+ functions
+- **Identifiers**: `UUID`, `MCOOKIE` - Generate UUIDs and random hex cookies
+- **Random data**: `SECURE_RANDOM`
+- **Temporary files**: `MKTEMP` - Generate temp file paths
 - Status: ✅ Built-in crypto (UUID), 🟡 Web Cryptography API dependent (SECURE_RANDOM), Both environments
+
+**Compression Functions** - 4+ functions
+- **Gzip**: `GZIP`, `GUNZIP`, `ZCAT` - Compress/decompress gzip data
+- Status: ✅ Pure JS (Node.js zlib built-in), Node.js only
+
+**Network Functions** - 2+ functions
+- **DNS**: `HOST` - DNS lookup, returns IP addresses
+- **Network info**: `IFCONFIG` - Network interface information
+- Status: 🟡 Node.js dependent (uses dns and os modules)
 
 ### System and Environment Functions
 
-**[File System Functions](13-filesystem-functions.md)** - 10+ functions
-- **File operations**: `FILE_READ`, `FILE_WRITE`, `FILE_APPEND`, `FILE_DELETE`
-- **File info**: `FILE_EXISTS`, `FILE_SIZE`, `FILE_MODIFIED`, `FILE_LIST`
-- **Directory operations**: `FILE_CREATE_DIR`, `FILE_REMOVE_DIR`
+**[File System Functions](13-filesystem-functions.md)** - 60+ functions
+- **File operations**: `CAT`, `CP`, `MV`, `RM`, `TOUCH`, `TRUNCATE`, `UNLINK`, `LINK`, `LN`
+- **File info**: `FILE_EXISTS`, `FILE_SIZE`, `FILE_MODIFIED`, `STAT`, `READLINK`
+- **Directory operations**: `MKDIR`, `RMDIR`, `LS`, `FIND`, `DU`
+- **Path operations**: `BASENAME`, `DIRNAME`, `PATH_RESOLVE`, `PATH_EXTNAME`
+- **Permissions**: `CHMOD`, `CHOWN`, `CHGRP`, `INSTALL`
+- **File comparison**: `CMP`, `COMM` - Compare files byte-by-byte or line-by-line
+- **Disk usage**: `DU` - Calculate directory sizes
+- **File synchronization**: `FSYNC`, `SYNC` - Flush data to disk
 - Status: 🟡 Environment dependent (localStorage/OPFS browser, fs Node.js), Both environments
 
-**Environment Variables** - 1 function
-- **OS environment access**: `GETENV(varname)` - Read OS environment variables
-- Returns empty string if variable doesn't exist
-- Status: 🟡 Node.js only (no process.env in browser)
-- Example: `SAY "User: " || GETENV("USER")`
+**System Information Functions** - 15+ functions
+- **User info**: `WHOAMI`, `USERINFO`, `LOGNAME`, `GROUPS` - Current user and group information
+- **System info**: `HOSTNAME`, `UNAME`, `ARCH`, `NPROC`, `UPTIME`, `DNSDOMAINNAME` - System details
+- **Environment**: `ENV(varname)`, `GETENV(varname)` - Environment variable access
+- **Configuration**: `GETCONF(name)` - System configuration values
+- **Terminal**: `TTY` - Check if running in a terminal
+- Status: 🟡 Node.js dependent (uses os module)
+- Examples:
+  - `SAY "User: " || WHOAMI()`
+  - `SAY "CPUs: " || NPROC()`
+  - `SAY "System: " || UNAME()`
 
 **Runtime Detection Variables** - 6 built-in variables
 - **Execution environment**: `RUNTIME.TYPE` - "nodejs", "browser", or "pkg"
@@ -186,9 +292,25 @@ This ensures:
 - **Boolean operations**: `LOGIC_AND`, `LOGIC_OR`, `LOGIC_NOT`, `LOGIC_XOR`
 - Status: ✅ Pure JS, Both environments
 
-**Random Functions** - 3+ functions
-- **Generation**: `RANDOM`, `RANDOM_INT`, `RANDOM_CHOICE`
+**Utility Functions** - 12+ functions
+- **Random generation**: `RANDOM`, `RANDOM_INT`, `RANDOM_CHOICE`
+- **Sequences**: `SEQ` - Generate numeric sequences
+- **Shuffling**: `SHUF` - Shuffle lines or arrays randomly
+- **Prime factorization**: `FACTOR` - Factor numbers into primes
+- **Calendar**: `CAL` - Generate calendar for month/year
+- **Command location**: `WHICH` - Search PATH for command
+- **Option parsing**: `GETOPT` - Parse command-line options
+- **Command building**: `XARGS` - Build and execute commands from input
+- **ASCII table**: `ASCII` - ASCII character information and table
+- **Timing**: `TIMEOUT` - Run command with time limit
+- **Delays**: `SLEEP`, `USLEEP` - Busy-wait delays
+- **Boolean utilities**: `TRUE`, `FALSE`, `YES` - Return constants or repeat text
 - Status: ✅ Pure JS, Both environments
+
+**Process Management Functions** - 2+ functions
+- **Signals**: `KILL` - Send signals to processes
+- **Timing**: `TIME` - Measure command execution time
+- Status: 🟡 Node.js dependent (uses process module)
 
 ## Function Availability Summary
 
@@ -196,29 +318,32 @@ This ensures:
 
 | **Status** | **Count** | **Percentage** | **Categories** |
 |------------|-----------|----------------|----------------|
-| **✅ Pure JS** | ~330+ | ~87% | String, Math, Array, JSON, Date/Time, Validation, Regex, Statistical, R-functions (data), SciPy, Probability, Excel, Data, Logic, Random |
-| **🟡 Environment-dependent** | ~10 | ~3% | Crypto functions, File operations, R-graphics (rendering) |
-| **🔴 External required** | ~45 | ~11% | DOM functions, Advanced file operations |
+| **✅ Pure JS** | ~400+ | ~85% | String, Math, Array, JSON, Date/Time, Validation, Regex, Statistical, R-functions (data), SciPy, Probability, Excel, Data, Logic, Utilities, Text Processing |
+| **🟡 Environment-dependent** | ~60 | ~13% | File operations, System info, Network, Compression, Process management, Crypto functions, R-graphics (rendering) |
+| **🔴 External required** | ~11 | ~2% | DOM functions |
 
 ### By Environment Support
 
 | **Environment** | **Function Count** | **Key Categories** |
 |-----------------|-------------------|-------------------|
-| **Both (Browser + Node.js)** | ~350+ | All core functions, R-functions, SciPy, Statistical analysis |
+| **Both (Browser + Node.js)** | ~400+ | All core functions, R-functions, SciPy, Statistical analysis, Text processing |
 | **Browser only** | ~11 | DOM manipulation and browser automation |
-| **Node.js only** | ~0 | (All Node.js functions also work in browser) |
+| **Node.js preferred** | ~60 | File system, System info, Network, Compression, Process management |
 
 ### By Functional Domain
 
 | **Domain** | **Function Count** | **Completeness** |
 |------------|-------------------|------------------|
-| **Text Processing** | ~50+ | Complete - string manipulation, regex, validation |
+| **Text Processing** | ~85+ | Complete - Unix text tools, string manipulation, regex, validation |
 | **Mathematical Computing** | ~70+ | Complete - basic math, advanced statistics, linear algebra |
-| **Statistical Analysis** | ~150+ | Comprehensive - R-language compatibility, ML, time series |  
+| **Statistical Analysis** | ~150+ | Comprehensive - R-language compatibility, ML, time series |
 | **Data Manipulation** | ~80+ | Complete - JSON, arrays, transformations, Excel compatibility |
 | **Scientific Computing** | ~20+ | Specialized - SciPy interpolation, probability distributions |
+| **File Operations** | ~60+ | Comprehensive - Unix file tools, permissions, disk usage |
+| **System Information** | ~25+ | Complete - user info, system details, environment variables |
+| **Security & Encoding** | ~25+ | Complete - hashing, checksums, encoding, encryption |
 | **Web Development** | ~25+ | Partial - URL handling, validation, limited DOM access |
-| **System Integration** | ~20+ | Environment-dependent - file I/O, crypto, browser automation |
+| **Utilities** | ~20+ | Complete - sequences, random, calendar, command tools |
 
 ## Cross-Reference by Use Case
 
@@ -251,12 +376,14 @@ This ensures:
 
 This Rexx interpreter provides **exceptional functional coverage** across domains:
 
-- **~400+ total functions** spanning 32+ categories
-- **~87% pure JavaScript implementation** - works offline without dependencies
+- **~470+ total functions** spanning 35+ categories
+- **~85% pure JavaScript implementation** - works offline without dependencies
+- **Complete Unix command-line toolset** - 85+ text processing and file operations
 - **Complete R-language statistical suite** - 150+ functions for data science
 - **Advanced interpolation library** - 16 methods including scattered data and splines
-- **Comprehensive text processing** - full regex engine plus 25+ string functions
+- **Comprehensive security toolkit** - 25+ hashing, checksum, and encoding functions
+- **System integration layer** - 25+ OS info, process, and network functions
 - **Excel compatibility layer** - familiar spreadsheet functions
 - **Modern web capabilities** - JSON, validation, security, DOM interaction
 
-The interpreter achieves **near-complete independence** from external services while providing **research-grade statistical computing** and **production-ready text processing** capabilities in a single JavaScript environment.
+The interpreter achieves **near-complete Unix shell equivalence** for text processing while providing **research-grade statistical computing** and **production-ready data manipulation** capabilities in a single JavaScript environment.
