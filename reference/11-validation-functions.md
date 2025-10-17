@@ -60,6 +60,85 @@ ELSE DO
 END
 ```
 
+### SYMBOL Function
+
+Check the definition status of variables - whether they are defined, undefined, or if the name is invalid.
+
+```rexx
+-- Check if a variable is defined
+LET myVar = "value"
+LET status1 = SYMBOL('myVar')    -- "VAR" (variable is defined)
+LET status2 = SYMBOL('unknown')  -- "LIT" (variable is not defined)
+LET status3 = SYMBOL('123bad')   -- "BAD" (invalid variable name)
+
+-- Common usage in optional parameter checking
+CALL myProc "required"
+-- Inside myProc:
+-- PARSE ARG first
+-- IF SYMBOL('optional') = 'VAR' THEN
+--   SAY "Optional parameter provided: " || optional
+-- ELSE
+--   SAY "Optional parameter not provided"
+-- ENDIF
+```
+
+**Return Values:**
+
+| Return Value | Meaning | Example |
+|-------------|---------|---------|
+| `"VAR"` | Variable is defined | `LET x = 10` then `SYMBOL('x')` → `"VAR"` |
+| `"LIT"` | Variable is undefined (treat as literal) | `SYMBOL('undefined_var')` → `"LIT"` |
+| `"BAD"` | Invalid variable name | `SYMBOL('123var')` → `"BAD"` |
+
+**Valid Variable Names:**
+- Must start with letter or underscore: `_var`, `myVar`, `a1`
+- Can contain letters, digits, underscores, periods: `my_var_2`, `obj.property`
+- Cannot start with digit: `123var` is BAD
+- Cannot contain special characters (except period): `my-var` is BAD
+
+**Practical Usage Examples:**
+
+```rexx
+-- Checking for optional parameters in procedures
+myFunc: PROCEDURE
+  ARG required, optional
+
+  -- Check if optional parameter was provided
+  IF SYMBOL('optional') = 'VAR' THEN
+    SAY "Using optional: " || optional
+  ELSE
+    SAY "Optional parameter not provided, using default"
+    LET optional = "default_value"
+  ENDIF
+
+  RETURN optional
+END
+
+-- Conditional variable initialization
+DO i = 1 TO 5
+  IF SYMBOL('counter') = 'LIT' THEN
+    LET counter = 0
+  ENDIF
+  LET counter = counter + i
+END
+SAY "Total: " || counter
+
+-- Validating user input for variable names
+LET userVar = "my_var_2"
+IF SYMBOL(userVar) = 'BAD' THEN
+  SAY "Invalid variable name: " || userVar
+ELSE IF SYMBOL(userVar) = 'VAR' THEN
+  SAY "Variable exists: " || userVar
+ELSE
+  SAY "Variable not yet defined: " || userVar
+ENDIF
+```
+
+**Works with:**
+- Procedure local variables
+- Global variables
+- All variable naming conventions
+
 ## Email and Web Validation
 
 ### Email Address Validation

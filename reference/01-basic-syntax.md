@@ -490,6 +490,109 @@ CONFIG
 - **Test data**: Define structured test fixtures
 - **Templates**: Multi-line content with dynamic variables
 
+## Escape Sequences
+
+### JavaScript-Style Escape Sequences
+
+RexxJS supports JavaScript-style escape sequences in all quoted strings. This is a **modern extension that breaks from classic REXX**, which doesn't support these escape sequences.
+
+**Supported Escape Sequences:**
+
+| Sequence | Character | Unicode | Example | Output |
+|----------|-----------|---------|---------|--------|
+| `\n` | Newline | U+000A | `"line1\nline2"` | line1<br/>line2 |
+| `\t` | Tab | U+0009 | `"col1\tcol2"` | col1    col2 |
+| `\r` | Carriage Return | U+000D | `"before\rafter"` | after |
+| `\b` | Backspace | U+0008 | `"text\bspace"` | texspace |
+| `\f` | Form Feed | U+000C | `"page1\fpage2"` | page1\fpage2 |
+| `\v` | Vertical Tab | U+000B | `"line1\vline2"` | line1\vline2 |
+| `\0` | Null Character | U+0000 | `"before\0after"` | before(null)after |
+| `\'` | Single Quote | U+0027 | `"It\'s"` | It's |
+| `\"` | Double Quote | U+0022 | `"Say \"hi\""` | Say "hi" |
+| `\\` | Backslash | U+005C | `"C:\\path"` | C:\path |
+| `\uXXXX` | Unicode (4-digit) | Any | `"\u0041"` | A |
+| `\uXXXXXXXX` | Unicode (8-digit) | Any | `"\u0001F600"` | 😀 |
+
+### Usage Examples
+
+**Basic Escape Sequences:**
+```rexx
+-- Newlines for multi-line strings
+LET message = "Line 1\nLine 2\nLine 3"
+SAY message
+-- Output:
+-- Line 1
+-- Line 2
+-- Line 3
+
+-- Tabs for formatting
+LET table = "Name\tAge\nAlice\t30\nBob\t25"
+SAY table
+-- Output:
+-- Name    Age
+-- Alice   30
+-- Bob     25
+
+-- Escaped quotes
+LET quoted = "She said \"Hello\""
+SAY quoted
+-- Output: She said "Hello"
+```
+
+**Unicode Escapes:**
+```rexx
+-- 4-digit Unicode (Basic Multilingual Plane)
+LET greek = "Alpha: \u03B1, Beta: \u03B2"
+SAY greek
+-- Output: Alpha: α, Beta: β
+
+-- 8-digit Unicode (extended planes, for emoji)
+LET emoji = "Smile: \u0001F600, Love: \u0001F60D"
+SAY emoji
+-- Output: Smile: 😀, Love: 😍
+
+-- Mathematical symbols
+LET math = "Plus-Minus: \u00B1, Multiply: \u00D7, Divide: \u00F7"
+SAY math
+-- Output: Plus-Minus: ±, Multiply: ×, Divide: ÷
+```
+
+**Escape Sequences in Different Contexts:**
+```rexx
+-- In SAY statements
+SAY "Direct SAY with Unicode: \u0041\u0042\u0043"
+-- Output: Direct SAY with Unicode: ABC
+
+-- In variable assignments
+LET text = "Newline test\n\u0041\u0042"
+SAY text
+-- Output: Newline test
+-- AB
+
+-- In function parameters
+LET length = LENGTH("hello\nworld")
+-- Result: 11 (5 + 1 newline + 5)
+
+-- In concatenation
+LET result = "Part1\t" || "Part2"
+SAY result
+-- Output: Part1   Part2
+
+-- In conditionals
+IF "text\nhere" = "text\nhere" THEN
+  SAY "Match"
+ENDIF
+-- Output: Match
+```
+
+### Important Notes
+
+- **Escape sequences work everywhere**: assignments, SAY statements, function parameters, concatenation operators
+- **Both single and double quotes supported**: `"string with escapes"` and `'string with escapes'`
+- **Invalid Unicode escapes are preserved**: If hex digits are invalid (e.g., `\uGGGG`), the backslash-u is kept as-is
+- **Incomplete Unicode escapes**: If there aren't enough hex digits, the escape remains literal (e.g., `\u12` stays as `\u12`)
+- **Modern extension**: This feature is not part of classic REXX and is a RexxJS-specific enhancement for modern string handling
+
 ## Comments
 
 ### Comment Syntax

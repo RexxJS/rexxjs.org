@@ -6,6 +6,41 @@ Comprehensive string manipulation and processing functions for text operations.
 
 ### Case Conversion
 
+### RIGHT and LEFT
+
+Extracts characters from the right or left end of a string, with optional padding to a specified length.
+
+**Usage:**
+```rexx
+-- Basic RIGHT - extract rightmost characters
+LET result = RIGHT("Hello, World", 5)   -- "World"
+LET last3 = RIGHT("12345", 3)          -- "345"
+
+-- LEFT - extract leftmost characters
+LET first5 = LEFT("Hello, World", 5)   -- "Hello"
+
+-- RIGHT with padding (pad to 5 chars with "0")
+LET padded = RIGHT("42", 5, "0")       -- "00042"
+LET zero_pad = RIGHT(5, 5, "0")        -- "00005"
+
+-- RIGHT with custom pad character
+LET dashes = RIGHT("ID", 10, "-")      -- "ID--------"
+LET stars = RIGHT("*", 5, "*")         -- "*****"
+
+-- LEFT with padding
+LET padded_left = LEFT("42", 5, "0")   -- "42000"
+
+-- Using in SAY statements
+SAY "ID: " || RIGHT(id, 5, "0")        -- Right-aligned with zero padding
+```
+
+**Key Features:**
+- **RIGHT(text, length [, pad])**: Extract rightmost `length` characters, pad if shorter
+- **LEFT(text, length [, pad])**: Extract leftmost `length` characters, pad if shorter
+- **Default padding**: Space character (` `) if pad not specified
+- **Multi-character padding**: Works with strings like `"--"` or `".."` (repeats as needed)
+- **Named parameters**: `RIGHT(text="value", length=5, pad="0")`
+
 ### SUBSTR
 Extracts a substring from a string starting at a specified position and optionally for a specified length.
 
@@ -15,7 +50,7 @@ LET result = SUBSTR("Hello, World", 1, 5)  -- "Hello"
 ```
 ```rexx
 LET upper = UPPER string="hello world"           -- "HELLO WORLD"
-LET lower = LOWER string="HELLO WORLD"           -- "hello world" 
+LET lower = LOWER string="HELLO WORLD"           -- "hello world"
 LET proper = PROPER string="hello world"         -- "Hello World"
 ```
 

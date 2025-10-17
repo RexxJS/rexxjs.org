@@ -1,439 +1,376 @@
 # Interpolation Patterns Reference
 
-Comprehensive guide to string interpolation patterns and the `INTERPOLATION PATTERN` statement in RexxJS.
+Comprehensive guide to string interpolation patterns and pattern switching in RexxJS.
 
 ## Overview
 
-RexxJS supports configurable string interpolation patterns that allow you to customize how variables are embedded within strings. You can use predefined patterns or create your own custom patterns for specific use cases.
+RexxJS supports configurable string interpolation patterns that allow you to customize how variables are embedded within strings. You can switch between predefined patterns at runtime or create custom patterns for specific use cases.
 
 ## Quick Reference
 
 ```rexx
 -- Switch between predefined patterns
-INTERPOLATION DEFAULT      -- {variable}
-INTERPOLATION HANDLEBARS   -- {{variable}}
-INTERPOLATION SHELL        -- ${variable}
-INTERPOLATION BATCH        -- %variable%
-INTERPOLATION CUSTOM       -- $$variable$$
-INTERPOLATION BRACKETS     -- [variable]
+SET_INTERPOLATION('handlebars')  -- {{variable}} (default)
+SET_INTERPOLATION('shell')       -- ${variable}
+SET_INTERPOLATION('batch')       -- %variable%
+SET_INTERPOLATION('doubledollar') -- $$variable$$
 
--- Create custom patterns
-INTERPOLATION PATTERN name=ANGLES start="<<" end=">>"
-INTERPOLATION ANGLES       -- <<variable>>
+-- Create custom patterns by example
+SET_INTERPOLATION('<<v>>')       -- <<variable>>
+SET_INTERPOLATION('{v}')         -- {variable}
+```
+
+## Important Notes
+
+### String Quote Types Matter
+
+Only **double-quoted strings** support interpolation:
+
+```rexx
+LET name = "Alice"
+
+-- ✅ Double quotes: interpolation works
+SAY "Hello {{name}}"  -- Output: Hello Alice
+
+-- ❌ Single quotes: literal text only
+SAY 'Hello {{name}}'  -- Output: Hello {{name}}
+```
+
+### Pattern Scope
+
+Pattern changes affect all subsequent string interpolation globally:
+
+```rexx
+SET_INTERPOLATION('shell')
+SAY "Name: ${name}"      -- Uses shell pattern
+
+-- All strings after this use shell pattern
+LET message = "User ${name} logged in"
+SAY message              -- Uses shell pattern
 ```
 
 ## Predefined Patterns
 
-### DEFAULT (REXX)
-**Pattern:** `{variable}`  
+### HANDLEBARS (Default)
+**Pattern:** `{{variable}}`
 **Default:** Yes
 
 ```rexx
 LET name = "Alice"
-SAY "Hello {name}"  -- Outputs: Hello Alice
-```
-
-### HANDLEBARS
-**Pattern:** `{{variable}}`
-
-```rexx
-INTERPOLATION HANDLEBARS
-LET name = "Bob"
-SAY "Hello {{name}}"  -- Outputs: Hello Bob
+SAY "Hello {{name}}"  -- Output: Hello Alice
 ```
 
 ### SHELL
 **Pattern:** `${variable}`
 
 ```rexx
-INTERPOLATION SHELL
-LET name = "Charlie"
-SAY "Hello ${name}"  -- Outputs: Hello Charlie
+SET_INTERPOLATION('shell')
+LET path = "/usr/local/bin"
+SAY "Installing to ${path}"  -- Output: Installing to /usr/local/bin
 ```
 
 ### BATCH
 **Pattern:** `%variable%`
 
 ```rexx
-INTERPOLATION BATCH
-LET name = "David"
-SAY "Hello %name%"  -- Outputs: Hello David
+SET_INTERPOLATION('batch')
+LET username = "admin"
+SAY "User: %username%"  -- Output: User: admin
 ```
 
-### CUSTOM
+### DOUBLEDOLLAR
 **Pattern:** `$$variable$$`
 
 ```rexx
-INTERPOLATION CUSTOM
-LET name = "Eve"
-SAY "Hello $$name$$"  -- Outputs: Hello Eve
+SET_INTERPOLATION('doubledollar')
+LET service = "web-api"
+SAY "Service: $$service$$"  -- Output: Service: web-api
 ```
 
-### BRACKETS
-**Pattern:** `[variable]`
+## Creating Custom Patterns
+
+You can create custom interpolation patterns by providing an example:
 
 ```rexx
-INTERPOLATION BRACKETS
-LET name = "Frank"
-SAY "Hello [name]"  -- Outputs: Hello Frank
+-- Single brace pattern
+SET_INTERPOLATION('{v}')
+LET name = "Bob"
+SAY "Hello {name}"  -- Output: Hello Bob
+
+-- Angle bracket pattern
+SET_INTERPOLATION('<<v>>')
+SAY "Hello <<name>>"  -- Output: Hello Bob
+
+-- Square bracket pattern
+SET_INTERPOLATION('[v]')
+SAY "Hello [name]"  -- Output: Hello Bob
+
+-- Custom delimiter pattern
+SET_INTERPOLATION('@@v@@')
+SAY "Hello @@name@@"  -- Output: Hello Bob
 ```
 
-## INTERPOLATION PATTERN Statement
+**Pattern Example Rules:**
+- Must contain a single variable placeholder (typically `v`)
+- The placeholder is replaced with the actual variable name
+- Start and end delimiters are extracted from the example
 
-### Syntax
+## Pattern Switching
+
+### Basic Pattern Switching
 
 ```rexx
-INTERPOLATION PATTERN name=PATTERN_NAME start="start_delimiter" end="end_delimiter"
+LET name = "Alice"
+
+-- Start with default handlebars
+SAY "Handlebars: {{name}}"  -- Output: Handlebars: Alice
+
+-- Switch to shell
+SET_INTERPOLATION('shell')
+SAY "Shell: ${name}"         -- Output: Shell: Alice
+
+-- Switch to batch
+SET_INTERPOLATION('batch')
+SAY "Batch: %name%"          -- Output: Batch: Alice
+
+-- Back to handlebars
+SET_INTERPOLATION('handlebars')
+SAY "Handlebars: {{name}}"   -- Output: Handlebars: Alice
 ```
-
-**Parameters:**
-- `name` - Unique name for the pattern (required)
-- `start` - Starting delimiter string (required, non-empty)
-- `end` - Ending delimiter string (required, non-empty)
-
-### Creating Custom Patterns
-
-```rexx
--- Ruby-style interpolation
-INTERPOLATION PATTERN name=RUBY start="#{" end="}"
-
--- XML/JSP-style
-INTERPOLATION PATTERN name=XML start="<%" end="%>"
-
--- Wiki-style
-INTERPOLATION PATTERN name=WIKI start="[[" end="]]"
-
--- Double pipe style
-INTERPOLATION PATTERN name=PIPES start="||" end="||"
-
--- Angle brackets
-INTERPOLATION PATTERN name=ANGLES start="<<" end=">>"
-```
-
-### Using Custom Patterns
-
-After defining a custom pattern, switch to it using the pattern name:
-
-```rexx
--- Define custom pattern
-INTERPOLATION PATTERN name=RUBY start="#{" end="}"
-
--- Switch to the custom pattern
-INTERPOLATION RUBY
-LET count = 5
-LET type = "items"
-SAY "Found #{count} #{type}"  -- Outputs: Found 5 items
-
--- Switch back to default
-INTERPOLATION DEFAULT
-SAY "Back to {count} {type}"  -- Outputs: Back to 5 items
-```
-
-## Pattern Lifecycle Management
-
-### Pattern Definition and Usage Workflow
-
-```rexx
--- 1. Define multiple custom patterns
-INTERPOLATION PATTERN name=RUBY start="#{" end="}"
-INTERPOLATION PATTERN name=XML start="<%" end="%>"
-INTERPOLATION PATTERN name=WIKI start="[[" end="]]"
-
--- 2. Switch between patterns as needed
-INTERPOLATION RUBY
-LET user = "Alice"
-SAY "User: #{user}"
-
-INTERPOLATION XML
-SAY "User: <%user%>"
-
-INTERPOLATION WIKI
-SAY "User: [[user]]"
-
--- 3. Return to default when done
-INTERPOLATION DEFAULT
-SAY "User: {user}"
-```
-
-### Pattern Persistence
-
-Custom patterns persist for the duration of the script execution:
-
-```rexx
--- Define pattern early in script
-INTERPOLATION PATTERN name=SPECIAL start="@@" end="@@"
-
--- Use throughout script
-PROCEDURE processUser(name)
-    INTERPOLATION SPECIAL
-    SAY "Processing @@name@@"
-    INTERPOLATION DEFAULT
-END
-
--- Pattern remains available
-CALL processUser "Alice"
-CALL processUser "Bob"
-```
-
-## Validation Rules
-
-### Valid Pattern Names
-- Must be unique (case-insensitive)
-- Cannot conflict with predefined pattern names
-- Should be descriptive and meaningful
-
-```rexx
--- ✅ Valid custom pattern names
-INTERPOLATION PATTERN name=RUBY start="#{" end="}"
-INTERPOLATION PATTERN name=ANGULAR start="{{" end="}}"
-INTERPOLATION PATTERN name=VELOCITY start="$" end=""
-
--- ❌ Invalid pattern names (reserved)
-INTERPOLATION PATTERN name=DEFAULT start="[" end="]"  -- Reserved
-INTERPOLATION PATTERN name=SHELL start="@" end="@"    -- Reserved
-INTERPOLATION PATTERN name=handlebars start="%" end="%" -- Case-insensitive conflict
-```
-
-### Valid Delimiters
-- Start and end delimiters must be non-empty
-- Delimiters can be multi-character
-- Special regex characters are automatically escaped
-
-```rexx
--- ✅ Valid delimiters
-INTERPOLATION PATTERN name=SIMPLE start="@" end="@"
-INTERPOLATION PATTERN name=MULTI start="[[" end="]]"
-INTERPOLATION PATTERN name=MIXED start="<%" end="%>"
-INTERPOLATION PATTERN name=SPECIAL start="${" end="}"
-
--- ❌ Invalid delimiters
-INTERPOLATION PATTERN name=EMPTY start="" end="@"      -- Empty start
-INTERPOLATION PATTERN name=BLANK start="@" end=""      -- Empty end
-```
-
-## Advanced Usage Examples
 
 ### Context-Specific Patterns
 
 ```rexx
--- SQL context with square brackets
-INTERPOLATION PATTERN name=SQL start="[" end="]"
-INTERPOLATION SQL
+-- Shell script generation
+SET_INTERPOLATION('shell')
+LET script = "#!/bin/bash\necho ${message}"
+
+-- Windows batch file generation
+SET_INTERPOLATION('batch')
+LET batch = "@echo off\necho %message%"
+
+-- Template generation
+SET_INTERPOLATION('handlebars')
+LET template = "<h1>{{title}}</h1>"
+```
+
+## Integration with ADDRESS and HEREDOC
+
+Interpolation patterns work seamlessly with ADDRESS commands and HEREDOC blocks:
+
+### ADDRESS Command Interpolation
+
+```rexx
+LET container = "my-app"
+
+-- Docker commands with handlebars
+ADDRESS DOCKER
+"create image=alpine:latest name={{container}}"
+"start name={{container}}"
+SAY "Container {{container}} started"
+```
+
+### HEREDOC with Custom Patterns
+
+```rexx
+-- SQL with custom pattern
+SET_INTERPOLATION('[v]')
+LET tableName = "users"
+LET userName = "alice"
+
 ADDRESS sqlite3 <<QUERY
-SELECT * FROM users WHERE name = '[userName]' AND status = '[userStatus]'
+SELECT * FROM [tableName] WHERE name = '[userName]'
 QUERY
 
--- API context with double braces
-INTERPOLATION HANDLEBARS
-ADDRESS api <<JSON
-{
-  "user": "{{userName}}",
-  "status": "{{userStatus}}",
-  "timestamp": "{{TIMESTAMP()}}"
-}
-JSON
+-- JSON API with handlebars
+SET_INTERPOLATION('handlebars')
+LET userId = "12345"
+LET action = "login"
 
--- Reset to default
-INTERPOLATION DEFAULT
+ADDRESS api <<JSON_REQUEST
+{
+  "endpoint": "/users/{{userId}}/actions",
+  "body": {
+    "action": "{{action}}",
+    "timestamp": "{{NOW()}}"
+  }
+}
+JSON_REQUEST
+```
+
+## Practical Examples
+
+### Multi-Environment Configuration
+
+```rexx
+-- Development environment
+LET env = "development"
+LET dbHost = "localhost"
+LET dbPort = "5432"
+
+-- Use shell-style for config files
+SET_INTERPOLATION('shell')
+
+LET config = <<CONFIG
+[${env}]
+host=${dbHost}
+port=${dbPort}
+debug=true
+CONFIG
+
+FILE_WRITE filename="config.ini" content=config
 ```
 
 ### Template Generation
 
 ```rexx
--- HTML template pattern
-INTERPOLATION PATTERN name=HTML start="{{" end="}}"
-INTERPOLATION HTML
+-- HTML email template
+SET_INTERPOLATION('handlebars')
 
-LET title = "Welcome Page"
-LET content = "Hello, visitor!"
+LET userName = "Alice"
+LET orderNumber = "ORD-12345"
+LET total = "99.99"
 
-ADDRESS templating <<HTML_TEMPLATE
+LET emailTemplate = <<HTML
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{title}}</title>
+    <title>Order Confirmation</title>
 </head>
 <body>
-    <h1>{{title}}</h1>
-    <p>{{content}}</p>
-    <p>Generated at: {{TIMESTAMP()}}</p>
+    <h1>Hello {{userName}}</h1>
+    <p>Your order {{orderNumber}} has been confirmed.</p>
+    <p>Total: ${{total}}</p>
 </body>
 </html>
-HTML_TEMPLATE
+HTML
+
+SAY emailTemplate
 ```
 
-### Configuration File Generation
+### Shell Script Generation
 
 ```rexx
--- Configuration with angle brackets
-INTERPOLATION PATTERN name=CONFIG start="<" end=">"
-INTERPOLATION CONFIG
+-- Generate bash script
+SET_INTERPOLATION('shell')
 
-LET dbHost = "localhost"
-LET dbPort = "5432"
-LET dbName = "myapp"
+LET appName = "myapp"
+LET version = "1.0.0"
+LET installDir = "/opt/myapp"
 
-ADDRESS config <<INI_CONFIG
-[database]
-host=<dbHost>
-port=<dbPort>
-name=<dbName>
-ssl=true
+LET script = <<BASH
+#!/bin/bash
+APP_NAME=${appName}
+VERSION=${version}
+INSTALL_DIR=${installDir}
 
-[logging]
-level=info
-file=app.log
-INI_CONFIG
-```
+echo "Installing ${APP_NAME} v${VERSION}"
+mkdir -p ${INSTALL_DIR}
+echo "Installation complete"
+BASH
 
-## Integration with ADDRESS and HEREDOC
-
-Custom interpolation patterns work seamlessly with ADDRESS HEREDOC blocks:
-
-```rexx
--- Define Ruby-style pattern for JSON API
-INTERPOLATION PATTERN name=RUBY start="#{" end="}"
-INTERPOLATION RUBY
-
-LET userId = "12345"
-LET action = "login"
-LET timestamp = TIMESTAMP()
-
-ADDRESS api <<JSON_REQUEST
-{
-  "method": "POST",
-  "endpoint": "/users/#{userId}/actions",
-  "body": {
-    "action": "#{action}",
-    "timestamp": "#{timestamp}",
-    "source": "rexx-script"
-  }
-}
-JSON_REQUEST
-
--- Switch back to default for normal processing
-INTERPOLATION DEFAULT
-SAY "Request sent for user {userId}"
-```
-
-## Error Handling
-
-### Common Errors and Solutions
-
-```rexx
--- Error: Duplicate pattern name
-INTERPOLATION PATTERN name=TEST start="@" end="@"
-INTERPOLATION PATTERN name=TEST start="#" end="#"  -- Error: name already exists
-
--- Error: Reserved name
-INTERPOLATION PATTERN name=DEFAULT start="%" end="%"  -- Error: reserved name
-
--- Error: Empty delimiter
-INTERPOLATION PATTERN name=INVALID start="" end="@"  -- Error: empty start delimiter
-
--- Error: Unknown pattern
-INTERPOLATION UNKNOWN_PATTERN  -- Error: pattern not defined
-```
-
-### Error Recovery
-
-```rexx
--- Graceful error handling
-TRY
-    INTERPOLATION PATTERN name=CUSTOM start="@@" end="@@"
-    INTERPOLATION CUSTOM
-    SAY "Using @@variable@@ pattern"
-CATCH error
-    SAY "Pattern creation failed: " || error.message
-    -- Fall back to default
-    INTERPOLATION DEFAULT
-    SAY "Using {variable} pattern"
-END
+FILE_WRITE filename="install.sh" content=script
 ```
 
 ## Best Practices
 
-### 1. Choose Meaningful Names
-```rexx
--- ✅ Good: Descriptive names
-INTERPOLATION PATTERN name=SQL_BRACKETS start="[" end="]"
-INTERPOLATION PATTERN name=RUBY_STYLE start="#{" end="}"
-INTERPOLATION PATTERN name=XML_TAGS start="<%" end="%>"
+### 1. Use Appropriate Patterns for Context
 
--- ❌ Avoid: Generic names
-INTERPOLATION PATTERN name=CUSTOM1 start="@" end="@"
-INTERPOLATION PATTERN name=PATTERN2 start="#" end="#"
+```rexx
+-- Shell scripts → shell pattern
+SET_INTERPOLATION('shell')
+
+-- Windows batch → batch pattern
+SET_INTERPOLATION('batch')
+
+-- Templates → handlebars pattern
+SET_INTERPOLATION('handlebars')
+
+-- SQL (if needed) → custom bracket pattern
+SET_INTERPOLATION('[v]')
 ```
 
-### 2. Document Pattern Usage
-```rexx
--- Use comments to document pattern choices
--- Ruby-style interpolation for JSON API templates
-INTERPOLATION PATTERN name=RUBY start="#{" end="}"
-INTERPOLATION RUBY
+### 2. Be Consistent Within Context
 
--- Process API requests with Ruby-style variables
-ADDRESS api <<JSON
-{
-  "user": "#{userName}",
-  "action": "#{userAction}"
-}
-JSON
+```rexx
+-- ✅ Good: Consistent pattern usage
+SET_INTERPOLATION('shell')
+LET config = "host=${host}\nport=${port}"
+LET script = "#!/bin/bash\nexport PATH=${path}"
+
+-- ❌ Avoid: Mixing patterns within same context
+SET_INTERPOLATION('shell')
+LET mixed = "host=${host}\nport={{port}}"  -- Inconsistent
 ```
 
-### 3. Reset Patterns When Done
+### 3. Document Pattern Changes
+
 ```rexx
--- Save current pattern state
-INTERPOLATION RUBY
+-- Document why you're switching patterns
+SAY "Generating shell scripts..."
+SET_INTERPOLATION('shell')
+-- ... shell script generation ...
 
--- ... use Ruby pattern for specific task ...
-
--- Always reset to default when task complete
-INTERPOLATION DEFAULT
+SAY "Generating HTML templates..."
+SET_INTERPOLATION('handlebars')
+-- ... HTML template generation ...
 ```
 
-### 4. Use Context-Appropriate Patterns
+### 4. Return to Default When Done
+
 ```rexx
--- SQL context: use square brackets (common in SQL)
-INTERPOLATION PATTERN name=SQL start="[" end="]"
+-- Use custom pattern for specific task
+SET_INTERPOLATION('[v]')
+-- ... SQL generation ...
 
--- Template context: use double braces (familiar from Handlebars)
-INTERPOLATION HANDLEBARS
-
--- Shell script context: use dollar brace (shell variable style)
-INTERPOLATION SHELL
+-- Return to default
+SET_INTERPOLATION('handlebars')
+-- ... rest of script ...
 ```
 
 ## Function Reference
 
-### Pattern Management Functions
+### SET_INTERPOLATION(pattern)
 
-While these are typically handled by the REXX interpreter, understanding the underlying concepts helps with pattern usage:
+Sets the global interpolation pattern by name or example.
 
-- **Pattern Definition**: `INTERPOLATION PATTERN name=NAME start="delim" end="delim"`
-- **Pattern Switching**: `INTERPOLATION PATTERN_NAME`
-- **Default Reset**: `INTERPOLATION DEFAULT`
-- **Pattern Validation**: Automatic validation during definition
+**Parameters:**
+- `pattern` - Pattern name (`'handlebars'`, `'shell'`, `'batch'`, `'doubledollar'`) or pattern example (e.g., `'{v}'`, `'<<v>>'`)
 
-### Predefined Pattern Names
+**Returns:** String - name of the pattern that was set (usually ignored)
 
-All predefined patterns can be referenced by name:
-- `DEFAULT`, `REXX` - `{variable}`
-- `HANDLEBARS` - `{{variable}}`
-- `SHELL` - `${variable}`
-- `BATCH` - `%variable%`
-- `CUSTOM` - `$$variable$$`
-- `BRACKETS` - `[variable]`
+**Examples:**
+```rexx
+-- By predefined name
+SET_INTERPOLATION('shell')
+SET_INTERPOLATION('batch')
+SET_INTERPOLATION('handlebars')
+
+-- By pattern example
+SET_INTERPOLATION('{v}')
+SET_INTERPOLATION('<<v>>')
+SET_INTERPOLATION('[v]')
+```
+
+## Predefined Pattern Names
+
+| Name | Pattern | Example Output |
+|------|---------|----------------|
+| `handlebars` | `{{var}}` | `Hello {{name}}` → `Hello Alice` |
+| `shell` | `${var}` | `Hello ${name}` → `Hello Alice` |
+| `batch` | `%var%` | `Hello %name%` → `Hello Alice` |
+| `doubledollar` | `$$var$$` | `Hello $$name$$` → `Hello Alice` |
 
 ## See Also
 
 - [Basic Syntax](01-basic-syntax.md) - String interpolation fundamentals
 - [ADDRESS HEREDOC Patterns](27-address-heredoc-patterns.md) - Using interpolation with ADDRESS
 - [Address Handler Utilities](29-address-handler-utilities.md) - Interpolation in handlers
-- [Dynamic Execution](18-interpret.md) - Interpolation with INTERPRET
+- [Output & Debugging](20-output-debug.md) - SAY statement with interpolation
 
 ---
 
-**Pattern Count:** 6 predefined patterns + unlimited custom patterns  
-**Delimiter Support:** Single or multi-character delimiters with automatic escaping  
-**Scope:** Global pattern switching with script-wide persistence
+**Pattern Count:** 4 predefined patterns + unlimited custom patterns
+**Delimiter Support:** Single or multi-character delimiters with automatic escaping
+**Scope:** Global pattern switching with script-wide effect
+**Quote Requirement:** Double quotes only (`"string"`) - single quotes (`'string'`) are literal
