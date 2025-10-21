@@ -199,6 +199,14 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
   - FILTER_BY_ATTR, FILTER_BY_CLASS - Filter elements by attributes or classes
   - GET_VALUES, GET_TEXT, GET_ATTRS - Extract data from elements (returns REXX stem arrays)
 
+### 🔍 [DOM Scoped Interpreters](35-dom-scoped-interpreters.md)
+- Multiple REXX scripts with isolated function registrations
+- RexxScript CSS class for automatic scope detection
+- Functions stored in element.__rexxFunctions instead of global window
+- Multi-tenant application support and zero namespace pollution
+- Backward compatible opt-in feature with full isolation control
+- Interactive demo: `/core/src/repl/dom-scoped-rexx.html`
+
 ### 🚌 [Control Bus](22-control-bus.md)
 - General-purpose distributed application coordination
 - CHECKPOINT function for progress monitoring and flow control
