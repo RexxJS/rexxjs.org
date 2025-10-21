@@ -182,12 +182,22 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 - Structured logging and audit trails
 - Debug workflows and progress tracking
 - Error reporting and diagnostics
+- **Function Discovery** - INFO() and FUNCTIONS() for exploring available functions
+  - INFO(functionName) - Get detailed metadata (module, category, description, parameters, examples)
+  - FUNCTIONS() - List all functions grouped by module
+  - FUNCTIONS(category) - List functions by category (String, Math, Array, DOM, etc.)
+  - FUNCTIONS(module) - List functions from specific module
+  - Dynamic metadata registration for REQUIRE'd modules
 
 ### 🎮 [DOM Functions](21-dom-functions.md)
 - Browser DOM query and manipulation (Autonomous Web Mode)
 - Element interaction (click, type, select)
 - CSS style and class management
 - Web automation and testing capabilities
+- **Chainable DOM operations** - All ELEMENT mutations return elements for pipeline composition
+- **DOM Pipeline Functions** - Filter and extract data from DOM elements in pipelines
+  - FILTER_BY_ATTR, FILTER_BY_CLASS - Filter elements by attributes or classes
+  - GET_VALUES, GET_TEXT, GET_ATTRS - Extract data from elements (returns REXX stem arrays)
 
 ### 🚌 [Control Bus](22-control-bus.md)
 - General-purpose distributed application coordination
@@ -277,6 +287,13 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 - Pattern lifecycle management and validation
 - Integration with ADDRESS HEREDOC blocks
 
+### 🔍 [Function Discovery](37-function-discovery.md)
+- Runtime function introspection with INFO() and FUNCTIONS()
+- Get detailed metadata about any function
+- Filter functions by category, module, or name
+- Dynamic metadata registration for custom libraries
+- Self-documenting code libraries
+
 ## Reference Materials
 
 ### 📚 [Function Reference](35-function-reference.md)
@@ -304,10 +321,13 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 
 ---
 
-**Total Functions:** 470+ built-in functions across all categories
+**Total Functions:** 500+ built-in functions across all categories (with dynamic registration support for custom libraries)
 **Language Features:** Complete Rexx implementation with modern enhancements
 **Unix Compatibility:** 85+ Unix command-line tools for text and file operations
 **Security:** Sandboxing, isolation, and cryptographic functions built-in
+**Function Discovery:** INFO() and FUNCTIONS() reflection system for runtime exploration
+**Pipeline Operations:** FILTER_BY_ATTR, FILTER_BY_CLASS, GET_VALUES, GET_TEXT, GET_ATTRS for DOM data extraction
+**Chainable DOM:** All ELEMENT mutations return elements for seamless pipeline composition
 ### 📚 [Function Libraries](12-function-libraries.md)
 - Built‑ins vs third‑party
 - Positional vs named arguments
