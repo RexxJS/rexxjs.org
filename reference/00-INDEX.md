@@ -170,12 +170,20 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 - Meta-programming patterns
 - Code generation techniques
 
+### 🌉 [ADDRESS: The Escape Hatch](16-address-escape-hatch.md)
+- **Conceptual foundation**: ADDRESS as an "escape hatch" to other domains
+- Historical context: From ARexx (1985) to RexxJS (2025)
+- REXX as orchestration layer, domains as specialists
+- Modern domains: Cloud, Containers, AI, Databases
+- Four types of escape hatches: Command, Function, HEREDOC, Pattern
+
 ### 📡 [Application Addressing](19-application-addressing.md)
 - ADDRESS statement for cross-application communication
 - **ADDRESS HEREDOC patterns** for domain-specific languages
 - Secure iframe integration and postMessage protocols
 - API integration and authentication workflows
 - Multi-application automation patterns
+- Historical origins and classic Amiga examples (DPaint, Directory Opus, PageStream)
 
 ### 💬 [Output and Debugging](20-output-debug.md)
 - SAY statement with variable interpolation
@@ -295,7 +303,14 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 - Pattern lifecycle management and validation
 - Integration with ADDRESS HEREDOC blocks
 
-### 🔍 [Function Discovery](37-function-discovery.md)
+### 📜 [ADDRESS: History and Patterns](37-address-history-and-patterns.md)
+- Evolution of ADDRESS from ARexx (1985) to RexxJS (2025)
+- Classic Amiga application domains (DPaint, Directory Opus, PageStream, GoldEd)
+- Six architectural patterns: command dispatch, sessions, queries, pipelines, error handling, parallel ops
+- Why ADDRESS endures: specialization, consistency, composition, decoupling
+- Migration guide from ARexx to RexxJS
+
+### 🔍 [Function Discovery](38-function-discovery.md)
 - Runtime function introspection with INFO() and FUNCTIONS()
 - Get detailed metadata about any function
 - Filter functions by category, module, or name
@@ -336,8 +351,4 @@ Execution in Node.js environments (desktop, server, docker-style container or VM
 **Function Discovery:** INFO() and FUNCTIONS() reflection system for runtime exploration
 **Pipeline Operations:** FILTER_BY_ATTR, FILTER_BY_CLASS, GET_VALUES, GET_TEXT, GET_ATTRS for DOM data extraction
 **Chainable DOM:** All ELEMENT mutations return elements for seamless pipeline composition
-### 📚 [Function Libraries](12-function-libraries.md)
-- Built‑ins vs third‑party
-- Positional vs named arguments
-- External script CALL semantics
-- COPY() and pass‑by semantics
+**ADDRESS Evolution:** 40-year-old orchestration pattern connecting Amiga era to cloud computing era

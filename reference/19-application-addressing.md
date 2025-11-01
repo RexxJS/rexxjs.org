@@ -2,6 +2,26 @@
 
 Cross-application communication and automation capabilities enabling secure scripting across application boundaries, supporting all execution modes with specialized iframe integration for Controlled Web Mode.
 
+## Historical Context: ADDRESS as an "Escape Hatch"
+
+The `ADDRESS` statement originated in **ARexx** (Amiga Rexx, 1985) as a mechanism for REXX scripts to "escape" from REXX and operate in specialized external domains—whether graphics applications (DPaint), file managers (Directory Opus), or typesetting systems (PageStream).
+
+Rather than reimplementing domain expertise in REXX, ADDRESS allows REXX to remain the **orchestration layer** while delegating specialized work to expert systems:
+
+```rexx
+-- REXX orchestrates; other systems specialize
+ADDRESS dpaint           -- Escape to graphics domain
+FILL X=100 Y=50          -- Domain-specific command
+SAVE "output.ilbm"       -- Domain-native format
+
+ADDRESS dopus            -- Escape to file management domain
+COPY SOURCE="*" DEST="Archive/"
+```
+
+This pattern persists in modern RexxJS, where `ADDRESS` enables orchestration across cloud services, containerization platforms, databases, and AI systems. The **concept is timeless**: delegate to specialists, coordinate with REXX.
+
+For a deep dive into ADDRESS's evolution and the escape-hatch pattern, see [ADDRESS: The Escape Hatch to Other Domains](16-address-escape-hatch.md) and [History and Patterns](37-address-history-and-patterns.md).
+
 ## Overview
 
 Application Addressing allows Rexx scripts to communicate with and control other applications through a secure postMessage-based protocol. This enables:
@@ -13,9 +33,9 @@ Application Addressing allows Rexx scripts to communicate with and control other
 
 TODO - possible future longer distance so to speak
 
-## Transport Modes
+## Transport Modes: Modern Evolution of an Timeless Pattern
 
-Application Addressing supports two distinct transport modes for cross-application communication, each optimized for different use cases:
+Application Addressing supports two distinct transport modes for cross-application communication, each optimized for different use cases. These modes build on the ADDRESS concept that originated in ARexx but now span modern cloud and container platforms.
 
 ### JSON-RPC Transport
 
@@ -108,6 +128,75 @@ SEND_CONTROL action="resume" message="Resuming processing"
 | **Director Control** | Request/response | Pause/resume/abort during execution |
 | **Introspection** | `_inspect` method discovery | Script execution status |
 | **Use Case** | Interactive automation | Batch processing workflows |
+
+### Classic Examples: ARexx to RexxJS Evolution
+
+The pattern of ADDRESS-based orchestration remains consistent across 40 years, adapted to modern platforms:
+
+#### Graphics Domain: DPaint (1985) → WebGL (2025)
+```rexx
+-- ARexx (1985): Automate graphics editing in DPaint
+ADDRESS dpaint
+BRUSH "mystyle.brush"
+FILL X=100 Y=50 COLOR=3
+DRAW FILLEDCIRCLE X=150 Y=150 RADIUS=50
+
+-- RexxJS (2025): Automate graphics via WebGL or Canvas
+ADDRESS webgl
+setColor R=128 G=64 B=255
+drawCircle x=150 y=150 radius=50
+drawRectangle x=100 y=50 width=100 height=80
+```
+
+#### File Management: Directory Opus (1985) → Docker (2025)
+```rexx
+-- ARexx (1985): Automate file operations
+ADDRESS dopus
+COPY SOURCE="Projects/*" DEST="Archive/"
+MAKEDIR "Archive/Backups"
+DELETE "Temp/*"
+
+-- RexxJS (2025): Automate container operations (modern "file management")
+ADDRESS docker
+"create image=node:18 name=project-container"
+"exec container=project-container command='cp -r /app/src /backup/'"
+"exec container=project-container command='rm -rf /app/temp'"
+```
+
+#### Document Processing: PageStream (1985) → Cloud APIs (2025)
+```rexx
+-- ARexx (1985): Automate document layout and export
+ADDRESS pagestream
+LOAD "document.txt"
+FONT "Helvetica" SIZE=12
+PARAGRAPH ALIGN=CENTER
+EXPORT TYPE=PDF FILENAME="output.pdf"
+
+-- RexxJS (2025): Automate document processing via cloud
+ADDRESS gcp
+"documents load source=gs://bucket/document.txt"
+"documents format font=Helvetica size=12 align=center"
+"documents export type=PDF destination=gs://bucket/output.pdf"
+```
+
+#### Text Editing: GoldEd (1985) → IDE/Code Services (2025)
+```rexx
+-- ARexx (1985): Batch text processing
+ADDRESS golded
+LOAD "source.txt"
+FIND "old_pattern"
+FINDREPLACE "old" "new" ALL
+SAVE BACKUP=1
+
+-- RexxJS (2025): Batch code transformation via language services
+ADDRESS codeservice
+loadFile "source.js"
+LET syntax = checkSyntax
+LET formatted = formatCode style="prettier"
+saveFile output=formatted backup=true
+```
+
+**Key insight**: The **interaction pattern is identical** across 40 years—escape to a domain, perform domain operations, return results. Only the **target systems** have evolved.
 
 ### Director/Worker Streaming Pattern
 
