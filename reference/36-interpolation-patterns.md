@@ -10,75 +10,193 @@ RexxJS supports configurable string interpolation patterns that allow you to cus
 
 ```rexx
 -- Switch between predefined patterns
-INTERPOLATION DEFAULT      -- {variable}
-INTERPOLATION HANDLEBARS   -- {{variable}}
+INTERPOLATION HANDLEBARS   -- {{variable}} (default)
 INTERPOLATION SHELL        -- ${variable}
 INTERPOLATION BATCH        -- %variable%
-INTERPOLATION CUSTOM       -- $$variable$$
-INTERPOLATION BRACKETS     -- [variable]
+INTERPOLATION DOUBLEDOLLAR -- $$variable$$
+
+-- Use pattern examples directly
+setInterpolationPattern("{{v}}")  -- Switch to handlebars
+setInterpolationPattern("${v}")   -- Switch to shell
+setInterpolationPattern("%v%")    -- Switch to batch
+setInterpolationPattern("$$v$$")  -- Switch to doubledollar
+setInterpolationPattern("<<v>>")  -- Create custom angle brackets
 
 -- Create custom patterns
-INTERPOLATION PATTERN name=ANGLES start="<<" end=">>"
-INTERPOLATION ANGLES       -- <<variable>>
+createCustomPattern("ANGLES", "<<", ">>")
 ```
 
 ## Predefined Patterns
 
-### DEFAULT (REXX)
-**Pattern:** `{variable}`  
+### HANDLEBARS (Default)
+**Pattern:** `{{variable}}`  
 **Default:** Yes
 
-```rexx
-LET name = "Alice"
-SAY "Hello {name}"  -- Outputs: Hello Alice
-```
+```javascript
+// JavaScript API
+setInterpolationPattern('handlebars');
+// or using pattern example
+setInterpolationPattern('{{v}}');
 
-### HANDLEBARS
-**Pattern:** `{{variable}}`
-
-```rexx
-INTERPOLATION HANDLEBARS
-LET name = "Bob"
-SAY "Hello {{name}}"  -- Outputs: Hello Bob
+const result = interpolateMessage('Hello {{name}}', { name: 'Alice' });
+// Outputs: Hello Alice
 ```
 
 ### SHELL
 **Pattern:** `${variable}`
 
-```rexx
-INTERPOLATION SHELL
-LET name = "Charlie"
-SAY "Hello ${name}"  -- Outputs: Hello Charlie
+```javascript
+// JavaScript API
+setInterpolationPattern('shell');
+// or using pattern example
+setInterpolationPattern('${v}');
+
+const result = interpolateMessage('Hello ${name}', { name: 'Bob' });
+// Outputs: Hello Bob
 ```
 
 ### BATCH
 **Pattern:** `%variable%`
 
-```rexx
-INTERPOLATION BATCH
-LET name = "David"
-SAY "Hello %name%"  -- Outputs: Hello David
+```javascript
+// JavaScript API
+setInterpolationPattern('batch');
+// or using pattern example
+setInterpolationPattern('%v%');
+
+const result = interpolateMessage('Hello %name%', { name: 'Charlie' });
+// Outputs: Hello Charlie
 ```
 
-### CUSTOM
+### DOUBLEDOLLAR
 **Pattern:** `$$variable$$`
 
-```rexx
-INTERPOLATION CUSTOM
-LET name = "Eve"
-SAY "Hello $$name$$"  -- Outputs: Hello Eve
+```javascript
+// JavaScript API
+setInterpolationPattern('doubledollar');
+// or using pattern example
+setInterpolationPattern('$$v$$');
+
+const result = interpolateMessage('Hello $$name$$', { name: 'David' });
+// Outputs: Hello David
 ```
 
-### BRACKETS
-**Pattern:** `[variable]`
+## Pattern Example Syntax
 
-```rexx
-INTERPOLATION BRACKETS
-LET name = "Frank"
-SAY "Hello [name]"  -- Outputs: Hello Frank
+### Using Pattern Examples with 'v' Placeholder
+
+The interpolation system now supports a convenient pattern example syntax where you can specify patterns using examples with 'v' as a variable placeholder:
+
+```javascript
+// Pattern examples automatically detect existing patterns
+setInterpolationPattern('{{v}}');    // Matches handlebars pattern
+setInterpolationPattern('${v}');     // Matches shell pattern  
+setInterpolationPattern('%v%');      // Matches batch pattern
+setInterpolationPattern('$$v$$');    // Matches doubledollar pattern
+
+// Pattern examples create new custom patterns
+setInterpolationPattern('<<v>>');    // Creates custom pattern with << and >>
+setInterpolationPattern('@@v@@');    // Creates custom pattern with @@ and @@
+setInterpolationPattern('<*v*>');    // Creates custom pattern with <* and *>
 ```
 
-## INTERPOLATION PATTERN Statement
+### Pattern Example Rules
+
+- The example string must contain the letter 'v'
+- The 'v' cannot be at the start or end of the string
+- There must be non-empty text before and after the 'v'
+- If the delimiters match an existing pattern, that pattern is returned
+- If no match is found, a new custom pattern is created
+
+```javascript
+// ✅ Valid pattern examples
+setInterpolationPattern('{{v}}');     // Valid: handlebars pattern
+setInterpolationPattern('#{v}');      // Valid: creates custom pattern
+setInterpolationPattern('((v))');     // Valid: creates custom pattern
+
+// ❌ Invalid pattern examples
+setInterpolationPattern('v');         // Invalid: v at edge
+setInterpolationPattern('vtest');     // Invalid: v at start  
+setInterpolationPattern('testv');     // Invalid: v at end
+setInterpolationPattern('test');      // Invalid: no v
+```
+
+## JavaScript API Reference
+
+### Core Functions
+
+```javascript
+const {
+  setInterpolationPattern,
+  getCurrentPattern,
+  resetToDefault,
+  getAvailablePatterns,
+  createCustomPattern,
+  parsePatternExample
+} = require('./src/interpolation-config');
+```
+
+### setInterpolationPattern(pattern)
+
+Sets the global interpolation pattern.
+
+**Parameters:**
+- `pattern` - String (pattern name or example) or Object (custom pattern)
+
+**Returns:** The configured pattern object
+
+```javascript
+// Using predefined pattern names
+setInterpolationPattern('handlebars');
+setInterpolationPattern('shell');
+
+// Using pattern examples  
+setInterpolationPattern('{{v}}');
+setInterpolationPattern('${v}');
+
+// Using custom pattern object
+setInterpolationPattern({
+  name: 'ruby',
+  regex: /#{([^}]+)}/g,
+  startDelim: '#{',
+  endDelim: '}',
+  hasDelims: (str) => str.includes('#{'),
+  extractVar: (match) => match.slice(2, -1)
+});
+```
+
+### createCustomPattern(name, startDelim, endDelim)
+
+Creates a custom interpolation pattern.
+
+**Parameters:**
+- `name` - Pattern name
+- `startDelim` - Start delimiter
+- `endDelim` - End delimiter
+
+**Returns:** Custom pattern configuration
+
+```javascript
+const pattern = createCustomPattern('ruby', '#{', '}');
+setInterpolationPattern(pattern);
+```
+
+### parsePatternExample(example)
+
+Parses a pattern example string to create or match a pattern.
+
+**Parameters:**
+- `example` - Pattern example string with 'v' placeholder
+
+**Returns:** Pattern configuration or null if invalid
+
+```javascript
+const pattern = parsePatternExample('{{v}}');  // Returns handlebars pattern
+const custom = parsePatternExample('<<v>>');   // Returns new custom pattern
+const invalid = parsePatternExample('test');   // Returns null
+```
+
+## INTERPOLATION PATTERN Statement (Legacy)
 
 ### Syntax
 
@@ -126,7 +244,7 @@ SAY "Found #{count} #{type}"  -- Outputs: Found 5 items
 
 -- Switch back to default
 INTERPOLATION DEFAULT
-SAY "Back to {count} {type}"  -- Outputs: Back to 5 items
+SAY "Back to {{count}} {{type}}"  -- Outputs: Back to 5 items
 ```
 
 ## Pattern Lifecycle Management
@@ -418,12 +536,10 @@ While these are typically handled by the REXX interpreter, understanding the und
 ### Predefined Pattern Names
 
 All predefined patterns can be referenced by name:
-- `DEFAULT`, `REXX` - `{variable}`
-- `HANDLEBARS` - `{{variable}}`
+- `HANDLEBARS` - `{{variable}}` (default)
 - `SHELL` - `${variable}`
 - `BATCH` - `%variable%`
-- `CUSTOM` - `$$variable$$`
-- `BRACKETS` - `[variable]`
+- `DOUBLEDOLLAR` - `$$variable$$`
 
 ## See Also
 
@@ -434,6 +550,7 @@ All predefined patterns can be referenced by name:
 
 ---
 
-**Pattern Count:** 6 predefined patterns + unlimited custom patterns  
+**Pattern Count:** 4 predefined patterns + unlimited custom patterns  
 **Delimiter Support:** Single or multi-character delimiters with automatic escaping  
+**Pattern Examples:** Direct pattern specification using 'v' placeholder syntax  
 **Scope:** Global pattern switching with script-wide persistence
